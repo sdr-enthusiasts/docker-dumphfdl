@@ -32,6 +32,7 @@ RUN set -x && \
     TEMP_PACKAGES+=(libzmq3-dev) && \
     KEPT_PACKAGES+=(libzmq5) && \
     TEMP_PACKAGES+=(libconfig++-dev) && \
+    KEPT_PACKAGES+=(libconfig++9v5) && \
     KEPT_PACKAGES+=(libfftw3-bin) && \
     TEMP_PACKAGES+=(libfftw3-dev) && \
     TEMP_PACKAGES+=(libliquid-dev) && \
