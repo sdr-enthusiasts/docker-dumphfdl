@@ -1,21 +1,18 @@
 #!/command/with-contenv bash
 #shellcheck shell=bash
 
-# Require that hfdl_server is running
-if ! netstat -an | grep -P '^\s*tcp\s+\d+\s+\d+\s+0\.0\.0\.0:15556\s+(?>\d{1,3}\.{0,1}){4}:\*\s+LISTEN\s*$' > /dev/null; then
-  sleep 1
-  if [[ ! ${QUIET_LOGS,,} =~ true ]]; then
-    echo "[dumphfdl] hfdl_server not running, exiting"
-  fi
-  exit
+# Credit goes to wiedehopf
+# https://raw.githubusercontent.com/wiedehopf/hfdlscript/main/hfdl.sh
+
+source /scripts/common
+
+if [[ -z "$TIMEOUT" ]]; then
+    TIMEOUT=90
 fi
-set -e
 
-#!/bin/bash
 
-# shows the date and time this script ran
-currentDate=`date`
-echo $currentDate
+"${s6wrap[@]}" echo "Running through test to determine best frequencies."
+"${s6wrap[@]}" echo "Each test will run for $TIMEOUT seconds"
 
 trap 'echo "[ERROR] Error in line $LINENO when executing: $BASH_COMMAND"' ERR
 
@@ -57,12 +54,9 @@ fname=()
 # For less-powerful processors or 8-bit sdrs add more frequency groups containing a lower frequency spread in each group
 freq=()
 
-#include an optimal sampling rate, gain settings, a count 0 and a friendly name for each frequency group if you have changed them to add more groups
-
 # group 1
 fname+=("11M13M")
 freq+=("11306 11312 11318 11321 11327 11348 11354 11384 11387 11184 11306")
-#gain+=("IFGR=53,RFGR=2")
 
 fname+=("11M13Mx2")
 freq+=("13264 13270 13276 13303 13312 13315 13321 13324 13342 13351 13354")
@@ -71,7 +65,6 @@ freq+=("13264 13270 13276 13303 13312 13315 13321 13324 13342 13351 13354")
 fname+=("5M6M")
 freq+=("5451 5502 5508 5514 5529 5538 5544 5547 5583 5589 5622 5652 5655 5720")
 samp+=("912000")
-#gain+=("IFGR=45,RFGR=4")
 
 fname+=(5M6Mx2)
 freq+=("6529 6535 6559 6565 6589 6619 6661")
@@ -79,29 +72,23 @@ freq+=("6529 6535 6559 6565 6589 6619 6661")
 # group 3
 fname+=("8M10M")
 freq+=("8825 8834 8843 8851 8885 8886 8894 8912 8921 8927 8936 8939 8942 8948 8957 8977")
-#gain+=("IFGR=53,RFGR=2")
 
 fname+=("8M10Mx2")
 freq+=("10027 10060 10063 10066 10075 10081 10084 10087 10093")
-#gain+=("IFGR=53,RFGR=2")
 
 # group 4
 fname+=("17M")
 freq+=("17901 17912 17916 17919 17922 17928 17934 17958 17967")
-#gain+=("IFGR=40,RFGR=2")
 
 # group 5
 fname+=("21M")
 freq+=("21928 21931 21934 21937 21949 21955 21982 21990 21995 21997")
-
-#gain+=("IFGR=40,RFGR=2")
 
 # build the command line for dumphfdl
 dumpcmd=( /usr/local/bin/dumphfdl )
 
 # edit the soapysdr driver as reuired
 dumpcmd+=( --soapysdr ${SOAPYSDRDRIVER} )
-# dumpcmd+=( --freq-as-squawk )
 
 # change the LOGFILE variable at the top to modify where the more permanent logfile is
 dumpcmd+=( --output "decoded:text:file:path=$LOGFILE")
@@ -122,11 +109,6 @@ pkill dumphfdl || true
 pkill tail || true
 sleep 5
 
-TIMEOUT="$1"
-if [[ -z "$TIMEOUT" ]]; then
-    TIMEOUT=90
-fi
-
 # this shouldn't need changing
 TMPLOG="/tmp/hfdl.sh.log.tmp"
 
@@ -135,7 +117,7 @@ positions=()
 stationMessages=()
 score=()
 
-echo --------
+"${s6wrap[@]}" echo --------
 i=0
 for x in "${freq[@]}"
 do
@@ -145,43 +127,43 @@ do
     score+=(0)
     rm -f "$TMPLOG"
     timeoutcmd=( timeout "$TIMEOUT" "${dumpcmd[@]}" $GAIN_TYPE $GAIN --sample-rate $SOAPYSAMPLERATE ${freq[$i]} --output "decoded:text:file:path=$TMPLOG" )
-    echo "running: ${timeoutcmd[@]}"
-    "${timeoutcmd[@]}" || true
+    "${s6wrap[@]}" echo "running: ${timeoutcmd[@]}"
+    "${s6wrap[@]}" "${timeoutcmd[@]}" || true
     if [[ -f "$TMPLOG" ]]; then
         stationMessages[$i]=$(grep -c "Src GS" "$TMPLOG" || true)
         aircraftMessages[$i]=$(grep -c "Src AC" "$TMPLOG" || true)
         positions[$i]=$(grep -c "Lat:" "$TMPLOG" || true)
         score[$i]=$(( WEIGHT_POSITIONS * positions[$i]  + WEIGHT_AIRCRAFT * aircraftMessages[$i] + WEIGHT_GROUNDSTATION * stationMessages[$i] ))
     fi
-    echo --------
-    printf "%-20s%-15s%-25s%-26s%-18s\n" "${fname[$i]}" "score: ${score[$i]}" "stationMessages: ${stationMessages[$i]}" "aircraftMessages: ${aircraftMessages[$i]}" "positions: ${positions[$i]}"
-    echo --------
+    "${s6wrap[@]}" echo --------
+    "${s6wrap[@]}" printf "%-20s%-15s%-25s%-26s%-18s\n" "${fname[$i]}" "score: ${score[$i]}" "stationMessages: ${stationMessages[$i]}" "aircraftMessages: ${aircraftMessages[$i]}" "positions: ${positions[$i]}"
+    "${s6wrap[@]}" echo --------
     (( i += 1 ))
     sleep 10
 done
 
 
-echo --------
-echo Summary:
-echo --------
+"${s6wrap[@]}" echo --------
+"${s6wrap[@]}" echo Summary:
+"${s6wrap[@]}" echo --------
 i=0
 k=0
 for x in "${freq[@]}"
 do
-    printf "%-20s%-15s%-25s%-26s%-18s\n" "${fname[$i]}" "score: ${score[$i]}" "stationMessages: ${stationMessages[$i]}" "aircraftMessages: ${aircraftMessages[$i]}" "positions: ${positions[$i]}"
+    "${s6wrap[@]}" printf "%-20s%-15s%-25s%-26s%-18s\n" "${fname[$i]}" "score: ${score[$i]}" "stationMessages: ${stationMessages[$i]}" "aircraftMessages: ${aircraftMessages[$i]}" "positions: ${positions[$i]}"
     if (( ${score[$i]} > ${score[$k]} ))
     then
         k=$i
     fi
     (( i += 1 ))
 done
-echo --------
-echo "${fname[$k]} wins"
-printf "%-20s%-15s%-25s%-26s%-18s\n" "${fname[$k]}" "score: ${score[$k]}" "stationMessages: ${stationMessages[$k]}" "aircraftMessages: ${aircraftMessages[$k]}" "positions: ${positions[$k]}"
-echo --------
+"${s6wrap[@]}" echo --------
+"${s6wrap[@]}" echo "${fname[$k]} wins"
+"${s6wrap[@]}" printf "%-20s%-15s%-25s%-26s%-18s\n" "${fname[$k]}" "score: ${score[$k]}" "stationMessages: ${stationMessages[$k]}" "aircraftMessages: ${aircraftMessages[$k]}" "positions: ${positions[$k]}"
+"${s6wrap[@]}" echo --------
 
 #Display the friendly name, gain elements, sample rate and active frequencies chosen by the script when running it manually in a terminal
-echo "Using ${fname[$k]}: gain-elements ${gain[$k]}, sample-rate ${samp[$k]}, frequencies ${freq[$k]}"
+"${s6wrap[@]}" echo "Using ${fname[$k]}: frequencies ${freq[$k]}"
 
 #this ends the script and runs dumphfdl using the above parameters and the most-acive frequency array using its gain reduction settings and sampling rate
 
@@ -190,7 +172,7 @@ echo "Using ${fname[$k]}: gain-elements ${gain[$k]}, sample-rate ${samp[$k]}, fr
 
 longcmd=( "${dumpcmd[@]}" $GAIN_TYPE $GAIN --sample-rate $SOAPYSAMPLERATE ${freq[$k]} )
 
-echo "------"
-echo "Running: ${longcmd[@]}"
-"${longcmd[@]}" 2>"$ERRORLOG" >/dev/null
-echo "------"
+"${s6wrap[@]}" echo "------"
+"${s6wrap[@]}" echo "Running: ${longcmd[@]}"
+"${s6wrap[@]}" "${longcmd[@]}" 2>"$ERRORLOG" >/dev/null
+"${s6wrap[@]}" echo "------"
