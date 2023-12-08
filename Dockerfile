@@ -77,15 +77,15 @@ RUN set -x && \
     popd && popd && \
     ldconfig && \
     # Deploy SoapyRTLTCP
-    git clone https://github.com/pothosware/SoapyRTLTCP.git /src/SoapyRTLTCP && \
-    pushd /src/SoapyRTLTCP && \
-    mkdir -p /src/SoapyRTLTCP/build && \
-    pushd /src/SoapyRTLTCP/build && \
-    cmake ../ -DCMAKE_BUILD_TYPE=Release && \
-    make all && \
-    make install && \
-    popd && popd && \
-    ldconfig && \
+    # git clone https://github.com/pothosware/SoapyRTLTCP.git /src/SoapyRTLTCP && \
+    # pushd /src/SoapyRTLTCP && \
+    # mkdir -p /src/SoapyRTLTCP/build && \
+    # pushd /src/SoapyRTLTCP/build && \
+    # cmake ../ -DCMAKE_BUILD_TYPE=Release && \
+    # make all && \
+    # make install && \
+    # popd && popd && \
+    # ldconfig && \
     # Deploy AirspyHF+
     git clone https://github.com/pothosware/SoapyAirspyHF.git /src/SoapyAirspyHF && \
     pushd /src/SoapyAirspyHF && \
