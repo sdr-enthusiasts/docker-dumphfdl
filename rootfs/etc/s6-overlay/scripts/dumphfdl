@@ -57,12 +57,6 @@ fname=()
 # For less-powerful processors or 8-bit sdrs add more frequency groups containing a lower frequency spread in each group
 freq=()
 
-#use the smallest sampling rate that is greater than 80% of the difference between the highest and lowest frequency in each group to allow a hiher bitrate in the SDR for higher dynamic range and better weak signal reception. The lower the sampling rate the better.
-samp=()
-
-#different gain reduction settings for each frequency group to allow optimizing performance
-gain=()
-
 #include an optimal sampling rate, gain settings, a count 0 and a friendly name for each frequency group if you have changed them to add more groups
 
 # group 1
@@ -77,7 +71,6 @@ freq+=("13264 13270 13276 13303 13312 13315 13321 13324 13342 13351 13354")
 fname+=("5M6M")
 freq+=("5451 5502 5508 5514 5529 5538 5544 5547 5583 5589 5622 5652 5655 5720")
 samp+=("912000")
-gain+=(40)
 #gain+=("IFGR=45,RFGR=4")
 
 fname+=(5M6Mx2)
