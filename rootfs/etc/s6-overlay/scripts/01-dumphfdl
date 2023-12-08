@@ -13,6 +13,21 @@ if [[ -z "$SOAPYSAMPLERATE" ]]; then
 	exit 1
 fi
 
+if [[ -z "$GAIN" ]]; then
+	echo "GAIN is not set, exiting"
+	exit 1
+fi
+
+if [[ -z "$GAIN_TYPE" ]]; then
+	echo "GAIN_TYPE is not set, exiting"
+	exit 1
+fi
+
+if [[ -z "$SOAPYSDRDRIVER" ]]; then
+	echo "SOAPYSDRDRIVER is not set, exiting"
+	exit 1
+fi
+
 IFS=';'
 read -ra SPLIT_FREQS <<< "${FREQUENCIES}"
 
