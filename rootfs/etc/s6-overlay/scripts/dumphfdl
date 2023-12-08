@@ -174,5 +174,5 @@ longcmd=( "${dumpcmd[@]}" $GAIN_TYPE $GAIN --sample-rate $SOAPYSAMPLERATE ${freq
 
 "${s6wrap[@]}" echo "------"
 "${s6wrap[@]}" echo "Running: ${longcmd[@]}"
-"${s6wrap[@]}" "${longcmd[@]}" 2>"$ERRORLOG" >/dev/null
+"${s6wrap[@]}" "${longcmd[@]}"
 "${s6wrap[@]}" echo "------"

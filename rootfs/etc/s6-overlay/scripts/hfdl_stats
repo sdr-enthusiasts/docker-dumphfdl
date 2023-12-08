@@ -33,6 +33,19 @@ while true; do
   done
   mv "/run/hfdl/hfdl.past5min.json" "/run/hfdl/hfdl.0.json" > /dev/null 2>&1 || true
 
+  # now check and see if the last 30 minutes of data has any messages. If not, pkill dumphfdl
+
+  # first, verify we have 30 minutes of data by verifying there are at least 6 files
+  if [[ $(find /run/hfdl -type f -name 'hfdl.*.json' | wc -l) -gt 6 ]]; then
+    # now check the last 6 files for messages
+    if [[ $(sed 's/}{/}\n{/g' /run/hfdl/hfdl.{0..5}.json | wc -l) -eq 0 ]]; then
+      echo "[hfdl_stats] No messages received in last 30 minutes, killing dumphfdl to rerun the frequency optimizer"
+      pkill dumphfdl
+      rm -f /run/hfdl/hfdl.*.json
+      exit
+    fi
+  fi
+
 done
 
 sleep 5
