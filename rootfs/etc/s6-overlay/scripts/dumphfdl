@@ -27,7 +27,7 @@ if [ -n "${SOAPYSDRDRIVER}" ]; then
 fi
 
 if [ -n "${SOAPYSDRBIAST}" ]; then
-  HFDL_CMD+=("--device-settings" "biast_ctrl=true")
+  HFDL_CMD+=("--device-settings" "biasT_ctrl=true")
 fi
 
 HFDL_CMD+=("--sample-rate" "$SOAPYSAMPLERATE")
