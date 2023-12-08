@@ -50,8 +50,8 @@ if [[ -n "$ZMQ_ENDPOINT" ]]; then
 fi
 
 # we need the driver for sure
-if [[ -n "${SOAPYSDRDRIVER}" ]]; then
-	if [[ -n "${SOAPYSDRSERIAL}" ]]; then
+if [[ -z "${SOAPYSDRDRIVER}" ]]; then
+	if [[ -z "${SOAPYSDRSERIAL}" ]]; then
 		echo "[WARN] No SOAPYSDRSERIAL is set. If you have more than one SDR plugged in the system may grab the wrong one!"
 	fi
 else
