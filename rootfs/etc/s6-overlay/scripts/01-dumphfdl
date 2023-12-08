@@ -13,9 +13,6 @@ read -ra SPLIT_FREQS <<< "${FREQUENCIES}"
 
 # loop through SPLIT_FREQS
 
-# FREQUENCIES needs to be in the range of 118000000 (118 MHz) - 137000000 (137 MHz).
-# Acceptable format is either in Hz (dumpvdl2 default) or in MHz (as with acarsdec)
-
 FREQ_STRING=""
 for i in "${SPLIT_FREQS[@]}"
 do
@@ -23,7 +20,7 @@ do
 	# if [[ $(echo "$j > 118000000" | bc)  -eq 0 || $(echo "$j < 137000000" | bc) -eq 0 ]]; then
 	# 	echo "warning: FREQUENCY $i is not in the range of 118000000 - 137000000 or 118.0 - 137.0"
 	# fi
-	FREQ_STRING+="$j "
+	FREQ_STRING+="$i "
 done
 
 # Make sure mode is valid
