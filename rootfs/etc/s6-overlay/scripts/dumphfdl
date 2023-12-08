@@ -19,18 +19,15 @@ HFDL_CMD=()
 # Specify device ID
 if [ -n "${SOAPYSDRDRIVER}" ]; then
   if [ -n "${SOAPYSDRSERIAL}" ]; then
-    if [ -n "${SOAPYSDRBIAST}" ]; then
-      HFDL_CMD+=("--soapysdr" "driver=${SOAPYSDRDRIVER},serial=${SOAPYSDRSERIAL},bias_tee=true")
-    else
-      HFDL_CMD+=("--soapysdr" "driver=${SOAPYSDRDRIVER},serial=${SOAPYSDRSERIAL}")
-    fi
+    HFDL_CMD+=("--soapysdr" "driver=${SOAPYSDRDRIVER},serial=${SOAPYSDRSERIAL}")
+
   else
-    if [ -n "${SOAPYSDRBIAST}" ]; then
-      HFDL_CMD+=("--soapysdr" "driver=${SOAPYSDRDRIVER},bias_tee=true")
-    else
-      HFDL_CMD+=("--soapysdr" "driver=${SOAPYSDRDRIVER}")
-    fi
+    HFDL_CMD+=("--soapysdr" "driver=${SOAPYSDRDRIVER}")
   fi
+fi
+
+if [ -n "${SOAPYSDRBIAST}" ]; then
+  HFDL_CMD+=("--device-settings biasT_ctrl=true")
 fi
 
 HFDL_CMD+=("--sample-rate" "$SOAPYSAMPLERATE")
