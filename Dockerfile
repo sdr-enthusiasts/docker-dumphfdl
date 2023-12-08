@@ -57,10 +57,17 @@ RUN set -x && \
     make install && \
     ldconfig && \
     popd && popd && \
+    git clone https://github.com/airspy/airspyone_host.git /src/airspyone_host && \
+    pushd /src/airspyone_host && \
+    mkdir -p /src/airspyone_host/build && \
+    pushd /src/airspyone_host/build && \
+    cmake ../ -DINSTALL_UDEV_RULES=ON && \
+    make && \
+    make install && \
+    ldconfig && \
+    popd && popd && \
     git clone https://github.com/pothosware/SoapySDR.git /src/SoapySDR && \
     pushd /src/SoapySDR && \
-    BRANCH_SOAPYSDR=$(git tag --sort="creatordate" | tail -1) && \
-    git checkout "$BRANCH_SOAPYSDR" && \
     mkdir -p /src/SoapySDR/build && \
     pushd /src/SoapySDR/build && \
     cmake ../ -DCMAKE_BUILD_TYPE=Release && \
@@ -88,6 +95,16 @@ RUN set -x && \
     make all && \
     make install && \
     popd && popd && \
+    ldconfig && \
+    git clone https://github.com/pothosware/SoapyAirspy.git /src/SoapyAirspy && \
+    pushd /src/SoapyAirspy && \
+    mkdir build && \
+    pushd build && \
+    cmake .. && \
+    make    && \
+    make install   && \
+    popd && \
+    popd && \
     ldconfig && \
     # Install dumphfdl
     git clone https://github.com/szpajder/dumphfdl.git /src/dumphfdl && \
