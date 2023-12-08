@@ -35,8 +35,11 @@ RUN set -x && \
     KEPT_PACKAGES+=(libfftw3-bin) && \
     TEMP_PACKAGES+=(libfftw3-dev) && \
     TEMP_PACKAGES+=(libliquid-dev) && \
+    KEPT_PACKAGES+=(libliquid1) && \
     TEMP_PACKAGES+=(libairspy-dev) && \
+    KEPT_PACKAGES+=(libairspy0) && \
     TEMP_PACKAGES+=(libusb-1.0-0-dev) && \
+    KEPT_PACKAGES+=(libusb-1.0-0) && \
     # install packages
     apt-get update && \
     apt-get install -y --no-install-recommends \

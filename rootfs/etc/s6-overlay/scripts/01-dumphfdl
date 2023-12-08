@@ -57,12 +57,10 @@ else
 	exit 1
 fi
 
-s6-chmod 0755 /etc/s6-overlay/scripts/dumpvdl2
-
 mkdir -p /run/hfdl
 touch /run/hfdl/hfdlpast5min.json
 
-sed -i "s/FREQ_STRING=\"\"/FREQ_STRING=\"$FREQ_STRING\"/g" /etc/s6-overlay/scripts/dumpvdl2
+sed -i "s/FREQ_STRING=\"\"/FREQ_STRING=\"$FREQ_STRING\"/g" /etc/s6-overlay/scripts/dumphfdl
 
 # Everything is good to go. Exit with 0
 

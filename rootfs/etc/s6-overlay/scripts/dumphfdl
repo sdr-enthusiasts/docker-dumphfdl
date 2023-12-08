@@ -15,14 +15,13 @@ HFDL_BIN="/usr/local/bin/dumphfdl"
 # shellcheck disable=SC2001
 FREQ_STRING=""
 HFDL_CMD=()
-DEVICE_ID=""
 
 # Specify device ID
 if [ -n "${SOAPYSDRDRIVER}" ]; then
   if [ -n "${SOAPYSDRSERIAL}" ]; then
-    DEVICE_ID="driver=${SOAPYSDRDRIVER},serial=${SOAPYSDRSERIAL}"
+    HFDL_CMD+="driver=${SOAPYSDRDRIVER},serial=${SOAPYSDRSERIAL}"
   else
-    DEVICE_ID="driver=${SOAPYSDRDRIVER}"
+    HFDL_CMD="driver=${SOAPYSDRDRIVER}"
   fi
 fi
 
