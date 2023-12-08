@@ -47,13 +47,13 @@ if [[ -n "$ZMQ_ENDPOINT" ]]; then
   fi
 fi
 
-	#sed -i "s/DEVICE_ID=\"\"/DEVICE_ID=\"$OUTPUT_DEVICE_ID\"/g" /etc/s6-overlay/scripts/dumpvdl2
-if [[ -n "${SOAPYSDR}" ]]; then
-	if ! SoapySDRUtil --probe="${SOAPYSDR}"; then
-		echo "Could not find SoapySDR device for '$SOAPYSDR'"
-		echo "Will continue start up but likely hfdl won't work"
+# we need the driver for sure
+if [[ -n "${SOAPYSDRDRIVER}" ]]; then
+	if [[ -n "${SOAPYSDRSERIAL}" ]]; then
+		echo "[WARN] No SOAPYSDRSERIAL is set. If you have more than one SDR plugged in the system may grab the wrong one!"
+	fi
 else
-	echo "SOAPYSDR is not set, exiting"
+	echo "SOAPYSDRDRIVER is not set, exiting"
 	exit 1
 fi
 
