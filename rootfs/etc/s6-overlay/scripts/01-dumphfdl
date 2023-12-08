@@ -40,6 +40,11 @@ if [[ -n "$ZMQ_ENDPOINT" ]]; then
   fi
 fi
 
+if [[ -z "$FEED_ID" ]]; then
+	echo "FEED_ID is not set, exiting"
+	exit 1
+fi
+
 mkdir -p /run/hfdl
 touch /run/hfdl/hfdlpast5min.json
 
