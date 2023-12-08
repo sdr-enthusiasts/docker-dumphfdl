@@ -8,6 +8,11 @@ if [[ -z "${FREQUENCIES}" ]]; then
 	exit 1
 fi
 
+if [[ -z "$SOAPYSAMPLERATE" ]]; then
+	echo "SOAPYSAMPLERATE is not set, exiting"
+	exit 1
+fi
+
 IFS=';'
 read -ra SPLIT_FREQS <<< "${FREQUENCIES}"
 

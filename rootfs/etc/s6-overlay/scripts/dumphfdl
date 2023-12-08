@@ -25,6 +25,8 @@ if [ -n "${SOAPYSDRDRIVER}" ]; then
   fi
 fi
 
+HFDL_CMD+=("--sample-rate" "$SOAPYSAMPLERATE")
+
 if [ -z "$GAIN" ]; then
     GAIN="20"
 fi
