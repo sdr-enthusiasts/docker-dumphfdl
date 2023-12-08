@@ -4,7 +4,7 @@
   set -o pipefail
   set -e
 
-  # Listens for the output of dumpvdl2 (UDP), and makes it available for multiple processes at TCP port 15555
+  # Listens for the output of dumphfdl (UDP), and makes it available for multiple processes at TCP port 15555
   # shellcheck disable=SC2016
   socat -u udp-listen:5556,fork stdout | ncat -4 --keep-open --listen 0.0.0.0 15556 \
   2>&1 | stdbuf -oL awk '{print "[hfdl_server] " strftime("%Y/%m/%d %H:%M:%S", systime()) " " $0}'
