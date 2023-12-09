@@ -75,16 +75,6 @@ RUN set -x && \
     make install && \
     popd && popd && \
     ldconfig && \
-    # Deploy SoapyRTLTCP
-    # git clone https://github.com/pothosware/SoapyRTLTCP.git /src/SoapyRTLTCP && \
-    # pushd /src/SoapyRTLTCP && \
-    # mkdir -p /src/SoapyRTLTCP/build && \
-    # pushd /src/SoapyRTLTCP/build && \
-    # cmake ../ -DCMAKE_BUILD_TYPE=Release && \
-    # make all && \
-    # make install && \
-    # popd && popd && \
-    # ldconfig && \
     # Deploy AirspyHF+
     git clone https://github.com/pothosware/SoapyAirspyHF.git /src/SoapyAirspyHF && \
     pushd /src/SoapyAirspyHF && \
@@ -113,14 +103,6 @@ RUN set -x && \
     cmake ../ -DCMAKE_BUILD_TYPE=Release && \
     make && \
     make install && \
-    # git clone https://github.com/szpajder/dumpvdl2.git /src/dumpvdl2 && \
-    # mkdir -p /src/dumpvdl2/build && \
-    # pushd /src/dumpvdl2/build && \
-    # # cmake ../ && \
-    # cmake ../ -DCMAKE_BUILD_TYPE=RelWithDebInfo && \
-    # make -j "$(nproc)" && \
-    # make install && \
-    # popd && \
     # Clean up
     apt-get remove -y "${TEMP_PACKAGES[@]}" && \
     apt-get autoremove -y && \

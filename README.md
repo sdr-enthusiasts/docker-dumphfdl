@@ -56,6 +56,15 @@ services:
 
 ```
 
+## Supported SDRs
+
+Any device that can be run via SoapySDR with the following drivers should, in theory, work:
+
+* `airspyhf`
+* `airspy`
+
+Keep in mind not every SDR is usable with HF decoding. If you have an SDR that is supported in Soapy, and not listed above, please contact me on discord and I'll see about adding support.
+
 ## Configuration options
 
 | Variable | Description | Required | Default |
