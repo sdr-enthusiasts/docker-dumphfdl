@@ -80,9 +80,9 @@ Keep in mind not every SDR is usable with HF decoding. If you have an SDR that i
 | `SERVER_PORT`     | If you want this container to forward JSON data, via TCP, to a consumer then set this to the port of a consumer                                                                                                                                                                                                                        | No       | `unset` |
 | `TIMEOUT`         | The number of seconds that the frequency selector will run each group of frequencies for to pick the optimal HFDL frequencies for monitoring.                                                                                                                                                                                          | No       | `90`    |
 
-## What this thing does under the hood
+## What this thing does under the hood, or why don't I specify frequencies?
 
-Rather than specify frequencies to monitor, the container is set up to use the `dumphfdl` frequency selector script from [wiedehopf](https://raw.githubusercontent.com/wiedehopf/hfdlscript/main/hfdl.sh). This will run through a list of frequencies and pick the best ones to monitor. This is done by running through a list of frequencies, monitoring each for a set amount of time, and then picking the best ones to monitor. On container start it will run through this list and pick the best frequencies to monitor. It will then start monitoring those frequencies.
+Rather than specify frequencies to monitor, the container is set up to use a modified version of the `hfdl.sh` frequency selector script from [wiedehopf](https://raw.githubusercontent.com/wiedehopf/hfdlscript/main/hfdl.sh). This will run through a list of frequencies and pick the best ones to monitor. This is done by running through a list of frequencies, monitoring each for a set amount of time (`TIMEOUT`), and then picking the best ones to monitor. On container start it will run through this list and pick the best frequencies to monitor. It will then start monitoring those frequencies.
 
 After the first 30 minutes have elapsed after container start, the container will monitor a rolling 30 minute time span to verify you are still receiving messages. If you are not, it will re-run the frequency selector script and pick new frequencies to monitor. This will continue to happen every 30 minutes.
 
@@ -94,4 +94,10 @@ docker exec -it dumphfdl /reset-dumphfdl.sh
 
 ## Future optimizations
 
-The frequency ranges were selected with the Airspy HF+ Discovery in mind. It has a fairly narrow sample rate, so the frequency ranges are fairly narrow. If you have a wider bandwidth SDR, it would be ideal to have more frequencies monitored at once. This is something I will be looking into in the future.
+The frequency ranges were selected with the Airspy HF+ Discovery in mind. It has a fairly narrow sample rate, so the frequency ranges are fairly narrow. If you have a wider bandwidth SDR, it would be ideal to have more frequencies monitored at once.
+
+It would also be ideal to be more circumspect in gain/sample rate based on the frequencies being monitored, which is how the original script from wiedehopf works.
+
+Also, it may be ideal to bypass the frequency selector script and just specify frequencies to monitor.
+
+These are things I will be looking into in the future.
