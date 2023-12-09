@@ -10,7 +10,7 @@ ENV DEVICE_INDEX="" \
     SOAPYSDR="" \
     SERVER_PORT="5556" \
     VDLM_FILTER_ENABLE="TRUE" \
-    MIN_MESSAGE_THESHOLD="5"
+    MIN_MESSAGE_THRESHOLD="5"
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 

@@ -17,9 +17,8 @@ fi
 
 # Start our stats loop
 while true; do
-
   # capture 5 mins of flows
-  "${s6wrap[@]}" timeout --foreground 300s socat -u TCP:127.0.0.1:15556 CREATE:/run/hfdl/hfdl.past5min.json
+  timeout --foreground 300s socat -u TCP:127.0.0.1:15556 CREATE:/run/hfdl/hfdl.past5min.json
 
   # if the port isn't reachable, this file isn't created, either container is shutting down or hfdl_server isn't reachable
   # in both cases let's exit, if this should still be running it will be restarted
@@ -43,7 +42,7 @@ while true; do
     # now check the last 6 files for messages
     average_message_count=$(sed 's/}{/}\n{/g' /run/hfdl/hfdl.{0..5}.json | wc -l)
     average_message_count=$((average_message_count / 6))
-    if [[ $average_message_count -lt $MIN_MESSAGE_THESHOLD ]]; then
+    if [[ $average_message_count -lt $MIN_MESSAGE_THRESHOLD ]]; then
       "${s6wrap[@]}" echo "Average messages (${average_message_count}) received in last 30 minutes is less then the threshold (${MIN_MESSAGE_THRESHOLD})"
       "${s6wrap[@]}" echo "Restarting dumphfdl to rerun the frequency optimizer"
       s6-svc -r /run/service/dumphfdl
