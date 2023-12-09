@@ -1,6 +1,9 @@
 #!/command/with-contenv bash
 #shellcheck shell=bash
 
+#shellcheck disable=SC2154
+source /scripts/common
+
 set -o pipefail
 
 # Require that hfdl_server is running
@@ -38,11 +41,16 @@ while true; do
   # first, verify we have 30 minutes of data by verifying there are at least 6 files
   if [[ $(find /run/hfdl -type f -name 'hfdl.*.json' | wc -l) -gt 6 ]]; then
     # now check the last 6 files for messages
-    if [[ $(sed 's/}{/}\n{/g' /run/hfdl/hfdl.{0..5}.json | wc -l) -eq 0 ]]; then
-      "${s6wrap[@]}" echo " No messages received in last 30 minutes, killing dumphfdl to rerun the frequency optimizer"
+    average_message_count=$(sed 's/}{/}\n{/g' /run/hfdl/hfdl.{0..5}.json | wc -l)
+    average_message_count=$((average_message_count / 6))
+    if [[ $average_message_count -lt $MIN_MESSAGE_THESHOLD ]]; then
+      "${s6wrap[@]}" echo "Average messages (${average_message_count}) received in last 30 minutes is less then the threshold (${MIN_MESSAGE_THRESHOLD})"
+      "${s6wrap[@]}" echo "Restarting dumphfdl to rerun the frequency optimizer"
       s6-svc -r /run/service/dumphfdl
       rm -f /run/hfdl/hfdl.*.json
       exit
+    else
+      "${s6wrap[@]}" echo "Average messages (${average_message_count}) received in last 30 minutes is greater then the threshold (${MIN_MESSAGE_THRESHOLD})"
     fi
   fi
 
