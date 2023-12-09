@@ -2,7 +2,7 @@
 #shellcheck shell=bash
 
 #shellcheck disable=SC2154
-source /scripts/common
+s6wrap=(s6wrap --quiet --timestamps --prepend="$(basename "$0")" --args)
 
 set -o pipefail
 
@@ -24,6 +24,12 @@ while true; do
   # in both cases let's exit, if this should still be running it will be restarted
   if ! [[ -f /run/hfdl/hfdl.past5min.json ]]; then
     exit
+  fi
+
+  # if /run/hfdl_test_mode exists we're in test mode, so don't do any of the following
+  if [[ -f /run/hfdl_test_mode ]]; then
+    rm -rf /run/hfdl/hfdl.*.json
+    continue
   fi
 
   # shellcheck disable=SC2016

@@ -6,6 +6,8 @@
 
 source /scripts/common
 
+touch /run/hfdl_test_mode
+
 if [[ -z "$TIMEOUT" ]]; then
     TIMEOUT=90
 fi
@@ -87,7 +89,7 @@ freq+=("21928 21931 21934 21937 21949 21955 21982 21990 21995 21997")
 # build the command line for dumphfdl
 dumpcmd=( /usr/local/bin/dumphfdl )
 
-# edit the soapysdr driver as reuired
+# edit the soapysdr driver as required
 dumpcmd+=( --soapysdr ${SOAPYSDRDRIVER} )
 dumpcmd+=(--station-id "$FEED_ID")
 
@@ -96,7 +98,7 @@ dumpcmd+=( --output "decoded:text:file:path=$LOGFILE")
 dumpcmd+=(--output "decoded:json:udp:address=127.0.0.1,port=5556")
 dumpcmd+=(--output "decoded:json:tcp:address=feed.airframes.io,port=5556")
 
-# adjust scoring weigths
+# adjust scoring weights
 WEIGHT_POSITIONS=40
 WEIGHT_AIRCRAFT=10
 WEIGHT_GROUNDSTATION=1
@@ -171,6 +173,8 @@ done
 
 #NOTE: if something is wrong with your script or if no messages were received it will always default to using the first frequency array
 
+
+rm -rf /run/hfdl_test_mode
 
 longcmd=( "${dumpcmd[@]}" $GAIN_TYPE $GAIN --sample-rate $SOAPYSAMPLERATE ${freq[$k]} )
 
