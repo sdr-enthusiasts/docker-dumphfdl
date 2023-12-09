@@ -8,7 +8,6 @@ ENV DEVICE_INDEX="" \
     GAIN="40" \
     SERIAL="" \
     SOAPYSDR="" \
-    SERVER="acarshub" \
     SERVER_PORT="5556" \
     VDLM_FILTER_ENABLE="TRUE"
 
