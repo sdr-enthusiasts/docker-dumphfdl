@@ -96,7 +96,13 @@ dumpcmd+=(--station-id "$FEED_ID")
 # change the LOGFILE variable at the top to modify where the more permanent logfile is
 dumpcmd+=( --output "decoded:text:file:path=$LOGFILE")
 dumpcmd+=(--output "decoded:json:udp:address=127.0.0.1,port=5556")
-dumpcmd+=(--output "decoded:json:tcp:address=feed.airframes.io,port=5556")
+# dumpcmd+=(--output "decoded:json:tcp:address=feed.airframes.io,port=5556")
+
+if [[ -n "$ZMQ_MODE" ]]; then
+  if [[ -n "$ZMQ_ENDPOINT" ]]; then
+    dumpcmd+=("--output" "decoded:json:zmq:mode=${ZMQ_MODE,,},endpoint=${ZMQ_ENDPOINT}")
+  fi
+fi
 
 # adjust scoring weights
 WEIGHT_POSITIONS=40
