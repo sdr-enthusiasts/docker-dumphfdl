@@ -49,13 +49,14 @@ while true; do
     average_message_count=$(sed 's/}{/}\n{/g' /run/hfdl/hfdl.{0..5}.json | wc -l)
     average_message_count=$((average_message_count / 6))
     if [[ $average_message_count -lt $MIN_MESSAGE_THRESHOLD ]]; then
-      "${s6wrap[@]}" echo "Average messages (${average_message_count}) received in last 30 minutes is less then the threshold (${MIN_MESSAGE_THRESHOLD})"
+      "${s6wrap[@]}" echo "Average messages/5 minutes (${average_message_count}) received in last 30 minutes is less then the threshold (${MIN_MESSAGE_THRESHOLD})"
       "${s6wrap[@]}" echo "Restarting dumphfdl to rerun the frequency optimizer"
       s6-svc -r /run/service/dumphfdl
       rm -f /run/hfdl/hfdl.*.json
       exit
     else
-      "${s6wrap[@]}" echo "Average messages (${average_message_count}) received in last 30 minutes is greater then the threshold (${MIN_MESSAGE_THRESHOLD})"
+      "${s6wrap[@]}" echo "Average messages/5 minutes (${average_message_count}) received in last 30 minutes is greater then the threshold (${MIN_MESSAGE_THRESHOLD})"
+      "${s6wrap[@]}" echo "Will check again in 5 minutes"
     fi
   fi
 
