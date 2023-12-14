@@ -37,10 +37,10 @@ RUN set -x && \
     TEMP_PACKAGES+=(libfftw3-dev) && \
     TEMP_PACKAGES+=(libliquid-dev) && \
     KEPT_PACKAGES+=(libliquid1) && \
-    # TEMP_PACKAGES+=(libairspy-dev) && \
-    # KEPT_PACKAGES+=(libairspy0) && \
     TEMP_PACKAGES+=(libusb-1.0-0-dev) && \
     KEPT_PACKAGES+=(libusb-1.0-0) && \
+    TEMP_PACKAGES+=(libsqlite3-dev) && \
+    KEPT_PACKAGES+=(libsqlite3-0) && \
     # install packages
     apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -66,6 +66,7 @@ RUN set -x && \
     make install && \
     ldconfig && \
     popd && popd && \
+    # Deploy SoapySDR
     git clone https://github.com/pothosware/SoapySDR.git /src/SoapySDR && \
     pushd /src/SoapySDR && \
     mkdir -p /src/SoapySDR/build && \
@@ -86,6 +87,7 @@ RUN set -x && \
     make install && \
     popd && popd && \
     ldconfig && \
+    # Deploy Airspy
     git clone https://github.com/pothosware/SoapyAirspy.git /src/SoapyAirspy && \
     pushd /src/SoapyAirspy && \
     mkdir build && \
@@ -97,16 +99,16 @@ RUN set -x && \
     popd && \
     ldconfig && \
     # install sdrplay support for soapy
-    git clone https://github.com/pothosware/SoapySDRPlay.git /src/SoapySDRPlay && \
-    pushd /src/SoapySDRPlay && \
-    mkdir build && \
-    pushd build && \
-    cmake .. && \
-    make && \
-    make install && \
-    popd && \
-    popd && \
-    ldconfig && \
+    # git clone https://github.com/pothosware/SoapySDRPlay.git /src/SoapySDRPlay && \
+    # pushd /src/SoapySDRPlay && \
+    # mkdir build && \
+    # pushd build && \
+    # cmake .. && \
+    # make && \
+    # make install && \
+    # popd && \
+    # popd && \
+    # ldconfig && \
     # Install dumphfdl
     git clone https://github.com/szpajder/dumphfdl.git /src/dumphfdl && \
     pushd /src/dumphfdl && \
@@ -115,6 +117,13 @@ RUN set -x && \
     cmake ../ -DCMAKE_BUILD_TYPE=Release && \
     make && \
     make install && \
+    # grab the basestation database
+    wget -o /tmp/BaseStation.zip https://github.com/rikgale/VRSData/raw/main/BaseStation.zip && \
+    mkdir -p /usr/local/share/basestation/ && \
+    unzip /tmp/BaseStation.zip -d /usr/local/share/basestation/ && \
+    # grab the /etc/systable.conf file from the dumphfdl source tree
+    mkdir -p /opt/dumphfdl-data && \
+    cp /src/dumphfdl/etc/systable.conf /opt/dumphfdl-data && \
     # Clean up
     apt-get remove -y "${TEMP_PACKAGES[@]}" && \
     apt-get autoremove -y && \
