@@ -41,6 +41,7 @@ RUN set -x && \
     KEPT_PACKAGES+=(libusb-1.0-0) && \
     TEMP_PACKAGES+=(libsqlite3-dev) && \
     KEPT_PACKAGES+=(libsqlite3-0) && \
+    TEMP_PACKAGES+=(unzip) && \
     # install packages
     apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -118,7 +119,7 @@ RUN set -x && \
     make && \
     make install && \
     # grab the basestation database
-    wget -o /tmp/BaseStation.zip https://github.com/rikgale/VRSData/raw/main/BaseStation.zip && \
+    wget -q -O /tmp/BaseStation.zip https://github.com/rikgale/VRSData/raw/main/BaseStation.zip && \
     mkdir -p /usr/local/share/basestation/ && \
     unzip /tmp/BaseStation.zip -d /usr/local/share/basestation/ && \
     # grab the /etc/systable.conf file from the dumphfdl source tree

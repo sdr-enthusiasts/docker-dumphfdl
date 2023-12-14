@@ -111,7 +111,7 @@ fi
 dumpcmd+=( --system-table "/opt/dumphfdl-data/systable.conf" --system-table-save "/opt/dumphfdl-data/systable.conf" )
 
 # base station database
-dumpcmd+=( --bs-db "/usr/local/share/basestation/basestation.sqb" --ac-details "verbose" --freq-as-squawk)
+dumpcmd+=( --bs-db "/usr/local/share/basestation/BaseStation.sqb" --ac-details "verbose" --freq-as-squawk)
 
 
 if [[ -n "$ZMQ_MODE" ]]; then
