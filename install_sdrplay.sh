@@ -20,18 +20,6 @@ fi
 echo "Architecture: ${ARCH}"
 echo "API Version: ${VERS}"
 
-if [ "${ARCH}" != "x86_64" ]; then
-    if [ "${ARCH}" != "i386" ]; then
-        if [ "${ARCH}" != "i686" ]; then
-            if [ "${ARCH}" != "Alpine64" ]; then
-                echo "The architecture on this device (${ARCH}) is not currently supported."
-                echo "Please contact software@sdrplay.com for details on platform support."
-                exit 1
-            fi
-        fi
-    fi
-fi
-
 # if arch is arm, armhf , set URL to ARM version
 # if arch is x86_64, set URL to x86_64 version
 # if arch is aarch64, set URL to aarch64 version
@@ -40,13 +28,13 @@ fi
 # https://www.sdrplay.com/software/SDRplay_RSP_API-ARM64-3.07.1.run
 # https://www.sdrplay.com/software/SDRplay_RSP_API-Linux-3.07.1.run
 
-if [ "${ARCH}" == "arm" ]; then
-  URL="https://www.sdrplay.com/software/SDRplay_RSP_API-ARM32-3.07.2.run"
-elif [ "${ARCH}" == "armhf" ]; then
+if [ "${ARCH}" == "armv7l" ]; then
   URL="https://www.sdrplay.com/software/SDRplay_RSP_API-ARM32-3.07.2.run"
 elif [ "${ARCH}" == "x86_64" ]; then
   URL="https://www.sdrplay.com/software/SDRplay_RSP_API-Linux-3.07.1.run"
 elif [ "${ARCH}" == "aarch64" ]; then
+  URL="https://www.sdrplay.com/software/SDRplay_RSP_API-ARM64-3.07.1.run"
+elif [ "${ARCH}" == "arm64" ]; then
   URL="https://www.sdrplay.com/software/SDRplay_RSP_API-ARM64-3.07.1.run"
 else
   echo "ERROR: Unsupported architecture!"
