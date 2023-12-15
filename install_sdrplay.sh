@@ -1,13 +1,14 @@
 #!/bin/bash
 
-ARCH=$(uname -m)
+#shellcheck disable=SC2164,SC2086,SC2006
+ARCH=`uname -m`
 OSDIST="Unknown"
 
 VERS="3.07"
 MAJVERS="3"
 
 if [ -f "/etc/os-release" ]; then
-    OSDIST=$(sed '1q;d' /etc/os-release)
+    OSDIST=`sed '1q;d' /etc/os-release`
     echo "DISTRIBUTION ${OSDIST}"
     case "$OSDIST" in
         *Alpine*)
@@ -59,9 +60,9 @@ echo "${URL}"
 
 curl -s --location --output /tmp/sdrplay.run "${URL}" || exit 1
 chmod +x /tmp/sdrplay.run
-pushd /tmp || exit 1
+pushd /tmp
 ./sdrplay.run --target /tmp/sdrplay --noexec || exit 1
-pushd /tmp/sdrplay || exit 1
+pushd /tmp/sdrplay
 
 cp sdrplay_license.txt /sdrplay_license.txt
 
@@ -88,23 +89,23 @@ mkdir -p ${INSTALLINCDIR} || exit 1
 mkdir -p ${INSTALLBINDIR} || exit 1
 
 echo -n "Installing ${INSTALLLIBDIR}/libsdrplay_api.so.${VERS}..."
-rm -f "${INSTALLLIBDIR}/libsdrplay_api.so.${VERS}" || exit 1
-cp -f "${ARCH}/libsdrplay_api.so.${VERS}" "${INSTALLLIBDIR}/." || exit 1
-chmod 644 "${INSTALLLIBDIR}/libsdrplay_api.so.${VERS}" || exit 1
-rm -f "${INSTALLLIBDIR}/libsdrplay_api.so.${MAJVERS}" || exit 1
-ln -s "${INSTALLLIBDIR}/libsdrplay_api.so.${VERS}" "${INSTALLLIBDIR}/libsdrplay_api.so.${MAJVERS}" || exit 1
-rm -f "${INSTALLLIBDIR}/libsdrplay_api.so" || exit 1
-ln -s "${INSTALLLIBDIR}/libsdrplay_api.so.${MAJVERS}" "${INSTALLLIBDIR}/libsdrplay_api.so"  || exit 1
+rm -f ${INSTALLLIBDIR}/libsdrplay_api.so.${VERS} || exit 1
+cp -f ${ARCH}/libsdrplay_api.so.${VERS} ${INSTALLLIBDIR}/. || exit 1
+chmod 644 ${INSTALLLIBDIR}/libsdrplay_api.so.${VERS} || exit 1
+rm -f ${INSTALLLIBDIR}/libsdrplay_api.so.${MAJVERS} || exit 1
+ln -s ${INSTALLLIBDIR}/libsdrplay_api.so.${VERS} ${INSTALLLIBDIR}/libsdrplay_api.so.${MAJVERS} || exit 1
+rm -f ${INSTALLLIBDIR}/libsdrplay_api.so || exit 1
+ln -s ${INSTALLLIBDIR}/libsdrplay_api.so.${MAJVERS} ${INSTALLLIBDIR}/libsdrplay_api.so  || exit 1
 echo "Done"
 
 echo -n "Installing header files in ${INSTALLINCDIR}..."
-cp -f inc/sdrplay_api*.h "${INSTALLINCDIR}/." || exit 1
-chmod 644 "${INSTALLINCDIR}/sdrplay_api*.h" || exit 1
+cp -f inc/sdrplay_api*.h ${INSTALLINCDIR}/. || exit 1
+chmod 644 ${INSTALLINCDIR}/sdrplay_api*.h || exit 1
 echo "Done"
 
 echo -n "Installing API Service in ${INSTALLBINDIR}..."
-cp -f "${ARCH}/sdrplay_apiService" "${INSTALLBINDIR}/sdrplay_apiService" || exit 1
-chmod 755 "${INSTALLBINDIR}/sdrplay_apiService"|| exit 1
+cp -f ${ARCH}/sdrplay_apiService ${INSTALLBINDIR}/sdrplay_apiService  || exit 1
+chmod 755 ${INSTALLBINDIR}/sdrplay_apiService || exit 1
 echo "Done"
 
 ldconfig
