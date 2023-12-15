@@ -62,6 +62,7 @@ Any device that can be run via SoapySDR with the following drivers should, in th
 
 - `airspyhf`
 - `airspy`
+- `rtlsdr` (note....v3 dongles will need an upconverter, and v4 dongles work but are not optimal for HF)
 - `SDRPlay`
 
 Keep in mind not every SDR is usable with HF decoding. If you have an SDR that is supported in Soapy, and not listed above, please contact me on discord and I'll see about adding support.
