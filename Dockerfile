@@ -16,6 +16,8 @@ ENV DEVICE_INDEX="" \
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
+COPY install_sdrplay.sh /tmp/install_sdrplay.sh
+
 # hadolint ignore=DL3008,SC2086,SC2039
 RUN set -x && \
     TEMP_PACKAGES=() && \
@@ -50,6 +52,9 @@ RUN set -x && \
     "${KEPT_PACKAGES[@]}" \
     "${TEMP_PACKAGES[@]}"\
     && \
+    # install sdrplay
+    chmod +x /tmp/install_sdrplay.sh && \
+    /tmp/install_sdrplay.sh && \
     # build libairspy
     git clone https://github.com/airspy/airspyhf.git /src/airspyhf && \
     pushd /src/airspyhf && \
@@ -101,17 +106,29 @@ RUN set -x && \
     popd && \
     popd && \
     ldconfig && \
+    # Deploy SoapyRTLSDR
+    git clone https://github.com/pothosware/SoapyRTLSDR.git /src/SoapyRTLSDR && \
+    pushd /src/SoapyRTLSDR && \
+    BRANCH_SOAPYRTLSDR=$(git tag --sort="creatordate" | tail -1) && \
+    git checkout "$BRANCH_SOAPYRTLSDR" && \
+    mkdir -p /src/SoapyRTLSDR/build && \
+    pushd /src/SoapyRTLSDR/build && \
+    cmake ../ -DCMAKE_BUILD_TYPE=Debug && \
+    make all && \
+    make install && \
+    popd && popd && \
+    ldconfig && \
     # install sdrplay support for soapy
-    # git clone https://github.com/pothosware/SoapySDRPlay.git /src/SoapySDRPlay && \
-    # pushd /src/SoapySDRPlay && \
-    # mkdir build && \
-    # pushd build && \
-    # cmake .. && \
-    # make && \
-    # make install && \
-    # popd && \
-    # popd && \
-    # ldconfig && \
+    git clone https://github.com/pothosware/SoapySDRPlay.git /src/SoapySDRPlay && \
+    pushd /src/SoapySDRPlay && \
+    mkdir build && \
+    pushd build && \
+    cmake .. && \
+    make && \
+    make install && \
+    popd && \
+    popd && \
+    ldconfig && \
     # Install dumphfdl
     git clone https://github.com/szpajder/dumphfdl.git /src/dumphfdl && \
     pushd /src/dumphfdl && \

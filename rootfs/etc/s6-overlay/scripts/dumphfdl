@@ -127,87 +127,100 @@ if [[ -n "$ZMQ_MODE" ]]; then
   fi
 fi
 
-# adjust scoring weights
-WEIGHT_POSITIONS=40
-WEIGHT_AIRCRAFT=10
-WEIGHT_GROUNDSTATION=1
+# only run scan if FREQUENCIES is not set
+if [[ -n "${FREQUENCIES}" ]]; then
+    rm -rf /run/hfdl_test_mode
+    longcmd=( "${dumpcmd[@]}" $GAIN_TYPE $GAIN --sample-rate $SOAPYSAMPLERATE ${FREQUENCIES} )
+
+    "${s6wrap[@]}" echo "Frequencies were supplied, skipping test."
+    "${s6wrap[@]}" echo "------"
+    "${s6wrap[@]}" echo "Running: ${longcmd[@]}"
+    "${s6wrap[@]}" "${longcmd[@]}"
+    "${s6wrap[@]}" echo "------"
+else
+
+    # adjust scoring weights
+    WEIGHT_POSITIONS=40
+    WEIGHT_AIRCRAFT=10
+    WEIGHT_GROUNDSTATION=1
 
 
-# nothing beyond this point should need user changes
+    # nothing beyond this point should need user changes
 
-trap 'echo "[ERROR] Error in line $LINENO when executing: $BASH_COMMAND"' ERR
+    trap 'echo "[ERROR] Error in line $LINENO when executing: $BASH_COMMAND"' ERR
 
-#this kills any currently-running dumphfdl and tail tasks. (If you tail or multitail the hfdl.log, not killing tail tasks will leave several zombie tail processes running which could impact your computer's performance.)
-pkill dumphfdl || true
-pkill tail || true
-sleep 5
+    #this kills any currently-running dumphfdl and tail tasks. (If you tail or multitail the hfdl.log, not killing tail tasks will leave several zombie tail processes running which could impact your computer's performance.)
+    pkill dumphfdl || true
+    pkill tail || true
+    sleep 5
 
-# this shouldn't need changing
-TMPLOG="/tmp/hfdl.sh.log.tmp"
+    # this shouldn't need changing
+    TMPLOG="/tmp/hfdl.sh.log.tmp"
 
-aircraftMessages=()
-positions=()
-stationMessages=()
-score=()
+    aircraftMessages=()
+    positions=()
+    stationMessages=()
+    score=()
 
-"${s6wrap[@]}" echo --------
-i=0
-for x in "${freq[@]}"
-do
-    aircraftMessages+=(0)
-    stationMessages+=(0)
-    positions+=(0)
-    score+=(0)
-    rm -f "$TMPLOG"
-    timeoutcmd=( timeout "$TIMEOUT" "${dumpcmd[@]}" $GAIN_TYPE $GAIN --sample-rate $SOAPYSAMPLERATE ${freq[$i]} --output "decoded:text:file:path=$TMPLOG" )
-    "${s6wrap[@]}" echo "running: ${timeoutcmd[@]}"
-    "${s6wrap[@]}" "${timeoutcmd[@]}" || true
-    if [[ -f "$TMPLOG" ]]; then
-        stationMessages[$i]=$(grep -c "Src GS" "$TMPLOG" || true)
-        aircraftMessages[$i]=$(grep -c "Src AC" "$TMPLOG" || true)
-        positions[$i]=$(grep -c "Lat:" "$TMPLOG" || true)
-        score[$i]=$(( WEIGHT_POSITIONS * positions[$i]  + WEIGHT_AIRCRAFT * aircraftMessages[$i] + WEIGHT_GROUNDSTATION * stationMessages[$i] ))
-    fi
     "${s6wrap[@]}" echo --------
-    "${s6wrap[@]}" printf "%-20s%-15s%-25s%-26s%-18s\n" "${fname[$i]}" "score: ${score[$i]}" "stationMessages: ${stationMessages[$i]}" "aircraftMessages: ${aircraftMessages[$i]}" "positions: ${positions[$i]}"
+    i=0
+    for x in "${freq[@]}"
+    do
+        aircraftMessages+=(0)
+        stationMessages+=(0)
+        positions+=(0)
+        score+=(0)
+        rm -f "$TMPLOG"
+        timeoutcmd=( timeout "$TIMEOUT" "${dumpcmd[@]}" $GAIN_TYPE $GAIN --sample-rate $SOAPYSAMPLERATE ${freq[$i]} --output "decoded:text:file:path=$TMPLOG" )
+        "${s6wrap[@]}" echo "running: ${timeoutcmd[@]}"
+        "${s6wrap[@]}" "${timeoutcmd[@]}" || true
+        if [[ -f "$TMPLOG" ]]; then
+            stationMessages[$i]=$(grep -c "Src GS" "$TMPLOG" || true)
+            aircraftMessages[$i]=$(grep -c "Src AC" "$TMPLOG" || true)
+            positions[$i]=$(grep -c "Lat:" "$TMPLOG" || true)
+            score[$i]=$(( WEIGHT_POSITIONS * positions[$i]  + WEIGHT_AIRCRAFT * aircraftMessages[$i] + WEIGHT_GROUNDSTATION * stationMessages[$i] ))
+        fi
+        "${s6wrap[@]}" echo --------
+        "${s6wrap[@]}" printf "%-20s%-15s%-25s%-26s%-18s\n" "${fname[$i]}" "score: ${score[$i]}" "stationMessages: ${stationMessages[$i]}" "aircraftMessages: ${aircraftMessages[$i]}" "positions: ${positions[$i]}"
+        "${s6wrap[@]}" echo --------
+        (( i += 1 ))
+        sleep 10
+    done
+
+
     "${s6wrap[@]}" echo --------
-    (( i += 1 ))
-    sleep 10
-done
+    "${s6wrap[@]}" echo Summary:
+    "${s6wrap[@]}" echo --------
+    i=0
+    k=0
+    for x in "${freq[@]}"
+    do
+        "${s6wrap[@]}" printf "%-20s%-15s%-25s%-26s%-18s\n" "${fname[$i]}" "score: ${score[$i]}" "stationMessages: ${stationMessages[$i]}" "aircraftMessages: ${aircraftMessages[$i]}" "positions: ${positions[$i]}"
+        if (( ${score[$i]} > ${score[$k]} ))
+        then
+            k=$i
+        fi
+        (( i += 1 ))
+    done
+    "${s6wrap[@]}" echo --------
+    "${s6wrap[@]}" echo "${fname[$k]} wins"
+    "${s6wrap[@]}" printf "%-20s%-15s%-25s%-26s%-18s\n" "${fname[$k]}" "score: ${score[$k]}" "stationMessages: ${stationMessages[$k]}" "aircraftMessages: ${aircraftMessages[$k]}" "positions: ${positions[$k]}"
+    "${s6wrap[@]}" echo --------
+
+    #Display the friendly name, gain elements, sample rate and active frequencies chosen by the script when running it manually in a terminal
+    "${s6wrap[@]}" echo "Using ${fname[$k]}: frequencies ${freq[$k]}"
+
+    #this ends the script and runs dumphfdl using the above parameters and the most-acive frequency array using its gain reduction settings and sampling rate
+
+    #NOTE: if something is wrong with your script or if no messages were received it will always default to using the first frequency array
 
 
-"${s6wrap[@]}" echo --------
-"${s6wrap[@]}" echo Summary:
-"${s6wrap[@]}" echo --------
-i=0
-k=0
-for x in "${freq[@]}"
-do
-    "${s6wrap[@]}" printf "%-20s%-15s%-25s%-26s%-18s\n" "${fname[$i]}" "score: ${score[$i]}" "stationMessages: ${stationMessages[$i]}" "aircraftMessages: ${aircraftMessages[$i]}" "positions: ${positions[$i]}"
-    if (( ${score[$i]} > ${score[$k]} ))
-    then
-        k=$i
-    fi
-    (( i += 1 ))
-done
-"${s6wrap[@]}" echo --------
-"${s6wrap[@]}" echo "${fname[$k]} wins"
-"${s6wrap[@]}" printf "%-20s%-15s%-25s%-26s%-18s\n" "${fname[$k]}" "score: ${score[$k]}" "stationMessages: ${stationMessages[$k]}" "aircraftMessages: ${aircraftMessages[$k]}" "positions: ${positions[$k]}"
-"${s6wrap[@]}" echo --------
+    rm -rf /run/hfdl_test_mode
 
-#Display the friendly name, gain elements, sample rate and active frequencies chosen by the script when running it manually in a terminal
-"${s6wrap[@]}" echo "Using ${fname[$k]}: frequencies ${freq[$k]}"
+    longcmd=( "${dumpcmd[@]}" $GAIN_TYPE $GAIN --sample-rate $SOAPYSAMPLERATE ${freq[$k]} )
 
-#this ends the script and runs dumphfdl using the above parameters and the most-acive frequency array using its gain reduction settings and sampling rate
-
-#NOTE: if something is wrong with your script or if no messages were received it will always default to using the first frequency array
-
-
-rm -rf /run/hfdl_test_mode
-
-longcmd=( "${dumpcmd[@]}" $GAIN_TYPE $GAIN --sample-rate $SOAPYSAMPLERATE ${freq[$k]} )
-
-"${s6wrap[@]}" echo "------"
-"${s6wrap[@]}" echo "Running: ${longcmd[@]}"
-"${s6wrap[@]}" "${longcmd[@]}"
-"${s6wrap[@]}" echo "------"
+    "${s6wrap[@]}" echo "------"
+    "${s6wrap[@]}" echo "Running: ${longcmd[@]}"
+    "${s6wrap[@]}" "${longcmd[@]}"
+    "${s6wrap[@]}" echo "------"
+fi

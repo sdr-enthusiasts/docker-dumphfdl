@@ -62,8 +62,15 @@ Any device that can be run via SoapySDR with the following drivers should, in th
 
 - `airspyhf`
 - `airspy`
+- `SDRPlay`
 
 Keep in mind not every SDR is usable with HF decoding. If you have an SDR that is supported in Soapy, and not listed above, please contact me on discord and I'll see about adding support.
+
+### SDR Play Notes
+
+Please be sure you are in compliance with the license restrictions. The container includes a copy of the license.
+
+You will need SDRPlay installed on the host machine. See [here](https://www.sdrplay.com/downloads/) for more information.
 
 ## Configuration options
 
@@ -85,10 +92,11 @@ Keep in mind not every SDR is usable with HF decoding. If you have an SDR that i
 | `ENABLE_SYSTABLE`         | Enrich messages with information about ground stations from the system table. If you want to persist changes that dumphfdl detects, map `/opt/dumphfdl-data` to a volume.                                                                                                                                                              | No       | `true`  |
 | `ENABLE_BASESTATION`      | Enrich messages with information about aircraft from basestation database.                                                                                                                                                                                                                                                             | No       | `true`  |
 | `BASESTATION_VERBOSE`     | Enable verbose mode for basestation database information.                                                                                                                                                                                                                                                                              | No       | `true`  |
+| `FREQUENCIES`             | A list of frequencies to monitor. If this is set, the frequency scanner will not be used.                                                                                                                                                                                                                                              | No       | `unset` |
 
-## What this thing does under the hood, or why don't I specify frequencies?
+## What this thing does under the hood, or why don't I have to specify frequencies?
 
-Rather than specify frequencies to monitor, the container is set up to use a modified version of the `hfdl.sh` frequency selector script from [wiedehopf](https://raw.githubusercontent.com/wiedehopf/hfdlscript/main/hfdl.sh). This will run through a list of frequencies and pick the best ones to monitor. This is done by running through a list of frequencies, monitoring each for a set amount of time (`TIMEOUT`), and then picking the best ones to monitor. On container start it will run through this list and pick the best frequencies to monitor. It will then start monitoring those frequencies.
+By default, rather than specify frequencies to monitor, the container is set up to use a modified version of the `hfdl.sh` frequency selector script from [wiedehopf](https://raw.githubusercontent.com/wiedehopf/hfdlscript/main/hfdl.sh). This will run through a list of frequencies and pick the best ones to monitor. This is done by running through a list of frequencies, monitoring each for a set amount of time (`TIMEOUT`), and then picking the best ones to monitor. On container start it will run through this list and pick the best frequencies to monitor. It will then start monitoring those frequencies.
 
 After the first 30 minutes have elapsed after container start, the container will monitor a rolling 30 minute time span to verify you are still receiving messages. If you are not, it will re-run the frequency selector script and pick new frequencies to monitor. This will continue to happen every 30 minutes.
 
@@ -97,6 +105,8 @@ If you want to change the frequencies that are monitored manually, run
 ```bash
 docker exec -it dumphfdl /reset-dumphfdl.sh
 ```
+
+If you do not wish to use the frequency selector script, you can specify frequencies to monitor by setting the `FREQUENCIES` variable. This should be a list of frequencies separated by spaces.
 
 ## Volumes
 
@@ -110,7 +120,5 @@ docker exec -it dumphfdl /reset-dumphfdl.sh
 The frequency ranges were selected with the Airspy HF+ Discovery in mind. It has a fairly narrow sample rate, so the frequency ranges are fairly narrow. If you have a wider bandwidth SDR, it would be ideal to have more frequencies monitored at once.
 
 It would also be ideal to be more circumspect in gain/sample rate based on the frequencies being monitored, which is how the original script from wiedehopf works.
-
-Also, it may be ideal to bypass the frequency selector script and just specify frequencies to monitor.
 
 These are things I will be looking into in the future.

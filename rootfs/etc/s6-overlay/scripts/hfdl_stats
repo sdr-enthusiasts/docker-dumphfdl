@@ -42,21 +42,23 @@ while true; do
   mv "/run/hfdl/hfdl.past5min.json" "/run/hfdl/hfdl.0.json" > /dev/null 2>&1 || true
 
   # now check and see if the last 30 minutes of data has any messages. If not, pkill dumphfdl
-
-  # first, verify we have 30 minutes of data by verifying there are at least 6 files
-  if [[ $(find /run/hfdl -type f -name 'hfdl.*.json' | wc -l) -gt 6 ]]; then
-    # now check the last 6 files for messages
-    average_message_count=$(sed 's/}{/}\n{/g' /run/hfdl/hfdl.{0..5}.json | wc -l)
-    average_message_count=$((average_message_count / 6))
-    if [[ $average_message_count -lt $MIN_MESSAGE_THRESHOLD ]]; then
-      "${s6wrap[@]}" echo "Average messages/5 minutes (${average_message_count}) received in last 30 minutes is less then the threshold (${MIN_MESSAGE_THRESHOLD})"
-      "${s6wrap[@]}" echo "Restarting dumphfdl to rerun the frequency optimizer"
-      s6-svc -r /run/service/dumphfdl
-      rm -f /run/hfdl/hfdl.*.json
-      exit
-    else
-      "${s6wrap[@]}" echo "Average messages/5 minutes (${average_message_count}) received in last 30 minutes is greater then the threshold (${MIN_MESSAGE_THRESHOLD})"
-      "${s6wrap[@]}" echo "Will check again in 5 minutes"
+  # if FREQUENCIES is set, we're not using dumphfdl scan, so skip this check
+  if [[ -z "${FREQUENCIES}" ]]; then
+    # first, verify we have 30 minutes of data by verifying there are at least 6 files
+    if [[ $(find /run/hfdl -type f -name 'hfdl.*.json' | wc -l) -gt 6 ]]; then
+      # now check the last 6 files for messages
+      average_message_count=$(sed 's/}{/}\n{/g' /run/hfdl/hfdl.{0..5}.json | wc -l)
+      average_message_count=$((average_message_count / 6))
+      if [[ $average_message_count -lt $MIN_MESSAGE_THRESHOLD ]]; then
+        "${s6wrap[@]}" echo "Average messages/5 minutes (${average_message_count}) received in last 30 minutes is less then the threshold (${MIN_MESSAGE_THRESHOLD})"
+        "${s6wrap[@]}" echo "Restarting dumphfdl to rerun the frequency optimizer"
+        s6-svc -r /run/service/dumphfdl
+        rm -f /run/hfdl/hfdl.*.json
+        exit
+      else
+        "${s6wrap[@]}" echo "Average messages/5 minutes (${average_message_count}) received in last 30 minutes is greater then the threshold (${MIN_MESSAGE_THRESHOLD})"
+        "${s6wrap[@]}" echo "Will check again in 5 minutes"
+      fi
     fi
   fi
 
