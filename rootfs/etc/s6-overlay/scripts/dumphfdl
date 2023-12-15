@@ -107,12 +107,19 @@ if [[ -n "$DUMP_HFDL_COMMAND_EXTRA" ]]; then
 
 fi
 
-# the systable file
-dumpcmd+=( --system-table "/opt/dumphfdl-data/systable.conf" --system-table-save "/opt/dumphfdl-data/systable.conf" )
+if chk_enabled "${ENABLE_SYSTABLE}"; then
+    # the systable file
+    dumpcmd+=( --system-table "/opt/dumphfdl-data/systable.conf" --system-table-save "/opt/dumphfdl-data/systable.conf" )
+fi
 
-# base station database
-dumpcmd+=( --bs-db "/usr/local/share/basestation/BaseStation.sqb" --ac-details "verbose" --freq-as-squawk)
+if chk_enabled "${ENABLE_BASESTATION}"; then
+    # base station database
+    dumpcmd+=( --bs-db "/usr/local/share/basestation/BaseStation.sqb" --freq-as-squawk)
 
+    if chk_enabled "${BASESTATION_VERBOSE}"; then
+        dumpcmd+=( --ac-details "verbose" )
+    fi
+fi
 
 if [[ -n "$ZMQ_MODE" ]]; then
   if [[ -n "$ZMQ_ENDPOINT" ]]; then

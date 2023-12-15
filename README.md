@@ -8,7 +8,7 @@
 
 Docker container for running [dumphfdl](https://github.com/szpajder/dumphfdl) and forwarding the received JSON messages to another system or docker container. Best used alongside [ACARS Hub](https://github.com/fredclausen/acarshub).
 
-Builds and runs on `amd64`, `arm64`, `arm/v7`, `arm/v6` and `386` architectures.
+Builds and runs on `amd64`, `arm64`, and `arm/v7` architectures.
 
 **_WORK IN PROGRESS. `acars_router` and `ACARS Hub` support is a WIP_**
 
@@ -81,7 +81,10 @@ Keep in mind not every SDR is usable with HF decoding. If you have an SDR that i
 | `SERVER_PORT`             | If you want this container to forward JSON data, via TCP, to a consumer then set this to the port of a consumer                                                                                                                                                                                                                        | No       | `unset` |
 | `TIMEOUT`                 | The number of seconds that the frequency selector will run each group of frequencies for to pick the optimal HFDL frequencies for monitoring.                                                                                                                                                                                          | No       | `90`    |
 | `MIN_MESSAGE_THRESHOLD`   | The minimum number of messages that should be received, on average, during the rolling 30 minute time period. If the average is below this threshold the frequency selector will be re-run.                                                                                                                                            | No       | `5`     |
-| `DUMP_HFDL_COMMAND_EXTRA` | Any extra command line parameters to pass to `dumphfdl`.                                                                                                                                                                                                                                                                               | No       | `unset` |
+| `DUMP_HFDL_COMMAND_EXTRA` | Any extra command line parameters to pass to `dumphfdl`, such as extra outputs you would like.                                                                                                                                                                                                                                         | No       | `unset` |
+| `ENABLE_SYSTABLE`         | Enrich messages with information about ground stations from the system table. If you want to persist changes that dumphfdl detects, map `/opt/dumphfdl-data` to a volume.                                                                                                                                                              | No       | `true`  |
+| `ENABLE_BASESTATION`      | Enrich messages with information about aircraft from basestation database.                                                                                                                                                                                                                                                             | No       | `true`  |
+| `BASESTATION_VERBOSE`     | Enable verbose mode for basestation database information.                                                                                                                                                                                                                                                                              | No       | `true`  |
 
 ## What this thing does under the hood, or why don't I specify frequencies?
 
