@@ -35,9 +35,12 @@ while true; do
     continue
   fi
 
+  # we don't want to accidentally count a low volume of messages in the average_message_count
+  # if we were previously in test mode. So we'll skip this check if we were in test mode but no longer are
   if [[ $was_testing_mode == true ]]; then
     "${s6wrap[@]}" echo "Exiting test mode. Will start to count messages again."
     was_testing_mode=false
+    rm -rf /run/hfdl/hfdl.*.json
     continue
   fi
 
