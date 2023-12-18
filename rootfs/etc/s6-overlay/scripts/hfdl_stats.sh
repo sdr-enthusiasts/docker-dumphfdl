@@ -2,7 +2,11 @@
 #shellcheck shell=bash
 
 #shellcheck disable=SC2154
-s6wrap=(s6wrap --quiet --timestamps --prepend="$(basename "$0")" --args)
+SCRIPT_NAME="$(basename "$0")"
+SCRIPT_NAME="${SCRIPT_NAME%.*}"
+
+# shellcheck disable=SC2034
+s6wrap=(s6wrap --quiet --timestamps --prepend="$SCRIPT_NAME" --args)
 
 set -o pipefail
 
