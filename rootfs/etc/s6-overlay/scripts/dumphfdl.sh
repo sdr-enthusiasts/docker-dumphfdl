@@ -146,7 +146,6 @@ else
     stationMessages+=(0)
     positions+=(0)
     score+=(0)
-    rm -f "$TMPLOG"
     # shellcheck disable=SC2206
     timeoutcmd=(timeout "$TIMEOUT" "${dumpcmd[@]}" "$GAIN_TYPE" "$GAIN" --sample-rate "$SOAPYSAMPLERATE" ${freq[$i]} --output "decoded:text:file:path=$TMPLOG")
     "${s6wrap[@]}" echo "running: ${timeoutcmd[*]}"
