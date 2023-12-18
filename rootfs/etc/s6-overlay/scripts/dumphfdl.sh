@@ -86,6 +86,20 @@ if [[ -n "${FREQUENCIES}" ]]; then
   "${s6wrap[@]}" echo "Running: ${longcmd[*]}"
   "${s6wrap[@]}" "${longcmd[@]}"
   "${s6wrap[@]}" echo "------"
+# we must be in scan mode, lets see if the scanner was previously run and we have a valid state
+elif [[ -f /opt/scanner/current_state ]]; then
+  #shellcheck disable=SC1091
+  source /opt/scanner/current_state
+  "${s6wrap[@]}" echo "Found previous state, running with previous state of frequencies."
+  "${s6wrap[@]}" echo "run docker exec -it dumphfdl /reset-dumphfdl.sh to rerun the scanner"
+  "${s6wrap[@]}" echo "Using ${freq[0]}"
+  rm -rf /run/hfdl_test_mode
+  longcmd=("${dumpcmd[@]}" "$GAIN_TYPE" "$GAIN" --sample-rate "$SOAPYSAMPLERATE" "${freq[0]}")
+
+  "${s6wrap[@]}" echo "------"
+  "${s6wrap[@]}" echo "Running: ${longcmd[*]}"
+  "${s6wrap[@]}" "${longcmd[@]}"
+  "${s6wrap[@]}" echo "------"
 else
 
   # adjust scoring weights
@@ -163,6 +177,7 @@ else
 
   rm -rf /run/hfdl_test_mode
 
+  echo "freq=(\"${freq[*]}\")" >/opt/scanner/current_state
   longcmd=("${dumpcmd[@]}" "$GAIN_TYPE" "$GAIN" --sample-rate "$SOAPYSAMPLERATE" "${freq[$k]}")
 
   "${s6wrap[@]}" echo "------"
