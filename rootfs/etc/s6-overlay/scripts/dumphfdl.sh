@@ -56,6 +56,10 @@ dumpcmd=(/usr/local/bin/dumphfdl)
 dumpcmd+=(--soapysdr "${SOAPYSDRDRIVER}")
 dumpcmd+=(--station-id "$FEED_ID")
 
+if [[ -n "$GAIN" ]]; then
+  dumpcmd+=("$GAIN_TYPE" "$GAIN")
+fi
+
 dumpcmd+=(--output "decoded:json:udp:address=127.0.0.1,port=5556")
 # dumpcmd+=(--output "decoded:json:tcp:address=feed.airframes.io,port=5556")
 
@@ -92,7 +96,7 @@ fi
 if [[ -n "${FREQUENCIES}" ]]; then
   rm -rf /run/hfdl_test_mode
   # shellcheck disable=SC2206
-  longcmd=("${dumpcmd[@]}" "$GAIN_TYPE" "$GAIN" --sample-rate "$SOAPYSAMPLERATE" $FREQUENCIES)
+  longcmd=("${dumpcmd[@]}" --sample-rate "$SOAPYSAMPLERATE" $FREQUENCIES)
 
   "${s6wrap[@]}" echo "Frequencies were supplied, skipping test."
   "${s6wrap[@]}" echo "------"
@@ -108,7 +112,7 @@ elif [[ -f /opt/scanner/current_state ]]; then
   "${s6wrap[@]}" echo "Using ${freq[0]}"
   rm -rf /run/hfdl_test_mode
   # shellcheck disable=SC2206
-  longcmd=("${dumpcmd[@]}" "$GAIN_TYPE" "$GAIN" --sample-rate "$SOAPYSAMPLERATE" ${freq[0]})
+  longcmd=("${dumpcmd[@]}" --sample-rate "$SOAPYSAMPLERATE" ${freq[0]})
 
   "${s6wrap[@]}" echo "------"
   "${s6wrap[@]}" echo "Running: ${longcmd[*]}"
@@ -148,7 +152,7 @@ else
     score+=(0)
     rm -f "$TMPLOG"
     # shellcheck disable=SC2206
-    timeoutcmd=(timeout "$TIMEOUT" "${dumpcmd[@]}" "$GAIN_TYPE" "$GAIN" --sample-rate "$SOAPYSAMPLERATE" ${freq[$i]} --output "decoded:text:file:path=$TMPLOG")
+    timeoutcmd=(timeout "$TIMEOUT" "${dumpcmd[@]}" --sample-rate "$SOAPYSAMPLERATE" ${freq[$i]} --output "decoded:text:file:path=$TMPLOG")
     "${s6wrap[@]}" echo "running: ${timeoutcmd[*]}"
     "${s6wrap[@]}" "${timeoutcmd[@]}" || true
     if [[ -f "$TMPLOG" ]]; then
@@ -194,7 +198,7 @@ else
 
   echo "freq=(\"${freq[$k]}\")" >/opt/scanner/current_state
   # shellcheck disable=SC2206
-  longcmd=("${dumpcmd[@]}" "$GAIN_TYPE" "$GAIN" --sample-rate "$SOAPYSAMPLERATE" ${freq[$k]})
+  longcmd=("${dumpcmd[@]}" --sample-rate "$SOAPYSAMPLERATE" ${freq[$k]})
 
   "${s6wrap[@]}" echo "------"
   "${s6wrap[@]}" echo "Running: ${longcmd[*]}"
