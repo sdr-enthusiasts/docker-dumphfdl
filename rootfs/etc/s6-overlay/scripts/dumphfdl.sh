@@ -79,7 +79,8 @@ fi
 # only run scan if FREQUENCIES is not set
 if [[ -n "${FREQUENCIES}" ]]; then
   rm -rf /run/hfdl_test_mode
-  longcmd=("${dumpcmd[@]}" "$GAIN_TYPE" "$GAIN" --sample-rate "$SOAPYSAMPLERATE" "${FREQUENCIES}")
+  # shellcheck disable=SC2206
+  longcmd=("${dumpcmd[@]}" "$GAIN_TYPE" "$GAIN" --sample-rate "$SOAPYSAMPLERATE" $FREQUENCIES)
 
   "${s6wrap[@]}" echo "Frequencies were supplied, skipping test."
   "${s6wrap[@]}" echo "------"
@@ -94,7 +95,8 @@ elif [[ -f /opt/scanner/current_state ]]; then
   "${s6wrap[@]}" echo "run docker exec -it dumphfdl /reset-dumphfdl.sh to rerun the scanner"
   "${s6wrap[@]}" echo "Using ${freq[0]}"
   rm -rf /run/hfdl_test_mode
-  longcmd=("${dumpcmd[@]}" "$GAIN_TYPE" "$GAIN" --sample-rate "$SOAPYSAMPLERATE" "${freq[0]}")
+  # shellcheck disable=SC2206
+  longcmd=("${dumpcmd[@]}" "$GAIN_TYPE" "$GAIN" --sample-rate "$SOAPYSAMPLERATE" ${freq[0]})
 
   "${s6wrap[@]}" echo "------"
   "${s6wrap[@]}" echo "Running: ${longcmd[*]}"
@@ -133,7 +135,8 @@ else
     positions+=(0)
     score+=(0)
     rm -f "$TMPLOG"
-    timeoutcmd=(timeout "$TIMEOUT" "${dumpcmd[@]}" "$GAIN_TYPE" "$GAIN" --sample-rate "$SOAPYSAMPLERATE" "${freq[$i]}" --output "decoded:text:file:path=$TMPLOG")
+    # shellcheck disable=SC2206
+    timeoutcmd=(timeout "$TIMEOUT" "${dumpcmd[@]}" "$GAIN_TYPE" "$GAIN" --sample-rate "$SOAPYSAMPLERATE" ${freq[$i]} --output "decoded:text:file:path=$TMPLOG")
     "${s6wrap[@]}" echo "running: ${timeoutcmd[*]}"
     "${s6wrap[@]}" "${timeoutcmd[@]}" || true
     if [[ -f "$TMPLOG" ]]; then
@@ -178,7 +181,8 @@ else
   rm -rf /run/hfdl_test_mode
 
   echo "freq=(\"${freq[*]}\")" >/opt/scanner/current_state
-  longcmd=("${dumpcmd[@]}" "$GAIN_TYPE" "$GAIN" --sample-rate "$SOAPYSAMPLERATE" "${freq[$k]}")
+  # shellcheck disable=SC2206
+  longcmd=("${dumpcmd[@]}" "$GAIN_TYPE" "$GAIN" --sample-rate "$SOAPYSAMPLERATE" ${freq[$k]})
 
   "${s6wrap[@]}" echo "------"
   "${s6wrap[@]}" echo "Running: ${longcmd[*]}"
