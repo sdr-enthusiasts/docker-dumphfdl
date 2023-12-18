@@ -55,7 +55,7 @@ if [[ -z "$FEED_ID" ]]; then
 fi
 
 mkdir -p /run/hfdl
-touch /run/hfdl/hfdlpast5min.json
+touch /run/hfdl/hfdl.past5min.json
 
 
 # Everything is good to go. Exit with 0
