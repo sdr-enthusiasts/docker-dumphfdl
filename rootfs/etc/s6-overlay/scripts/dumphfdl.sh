@@ -133,7 +133,7 @@ else
     positions+=(0)
     score+=(0)
     rm -f "$TMPLOG"
-    timeoutcmd=(timeout "$TIMEOUT" "${dumpcmd[@]}" "$GAIN_TYPE" "$GAIN" --sample-rate "$SOAPYSAMPLERATE" "${freq[i]}" --output "decoded:text:file:path=$TMPLOG")
+    timeoutcmd=(timeout "$TIMEOUT" "${dumpcmd[@]}" "$GAIN_TYPE" "$GAIN" --sample-rate "$SOAPYSAMPLERATE" "${freq[$i]}" --output "decoded:text:file:path=$TMPLOG")
     "${s6wrap[@]}" echo "running: ${timeoutcmd[*]}"
     "${s6wrap[@]}" "${timeoutcmd[@]}" || true
     if [[ -f "$TMPLOG" ]]; then
