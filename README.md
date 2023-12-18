@@ -113,7 +113,7 @@ If you do not wish to use the frequency selector script, you can specify frequen
 
 Map a volume to `/opt/scanner` to retain the current state of the scanner between container starts. This will allow the scanner to pick up where it left off on container restarts without rescanning.
 
-If you want to customize the frequency bands, number of bands, etc, map a volume to `/opt/scanner` and include a file in there named `scanner_freqs.sh.` Please see [this](https://github.com/sdr-enthusiasts/docker-dumphfdl/blob/maint/rootfs/opt/hfdl/scanner_freqs.sh) for an example. Please be sure to follow the same formatting.
+If you want to customize the frequency bands, number of bands, etc, map a volume to `/opt/scanner` and include a file in there named `scanner_freqs.sh.` Please see [this](https://github.com/sdr-enthusiasts/docker-dumphfdl/blob/main/rootfs/opt/hfdl/scanner_freqs.sh) for an example. Please be sure to follow the same formatting.
 
 ## Volumes
 
