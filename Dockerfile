@@ -61,7 +61,7 @@ RUN set -x && \
     pushd /src/airspyhf && \
     # we need to sed fix libairspyhf/src/airspyhf.c to fix some overflow problems
     #  #define SAMPLES_TO_TRANSFER (1024 * 2) needs to be  #define SAMPLES_TO_TRANSFER (1024 * 16)
-    sed -i 's/#define SAMPLES_TO_TRANSFER (1024 \* 2)/#define SAMPLES_TO_TRANSFER (1024 \* 16)/g' /src/airspyhf/libairspy/src/airspyhf.c && \
+    sed -i 's/#define SAMPLES_TO_TRANSFER (1024 \* 2)/#define SAMPLES_TO_TRANSFER (1024 \* 16)/g' /src/airspyhf/libairspyhf/src/airspyhf.c && \
     mkdir -p /src/airspyhf/build && \
     pushd /src/airspyhf/build && \
     cmake ../ -DCMAKE_BUILD_TYPE=Release -DINSTALL_UDEV_RULES=ON && \
