@@ -6,8 +6,10 @@ s6wrap=(s6wrap --quiet --timestamps --prepend="$(basename "$0")" --args)
 
 set -o pipefail
 
+was_testing_mode=false
+
 # Require that hfdl_server is running
-if ! netstat -an | grep -P '^\s*tcp\s+\d+\s+\d+\s+0\.0\.0\.0:15556\s+(?>\d{1,3}\.{0,1}){4}:\*\s+LISTEN\s*$' > /dev/null; then
+if ! netstat -an | grep -P '^\s*tcp\s+\d+\s+\d+\s+0\.0\.0\.0:15556\s+(?>\d{1,3}\.{0,1}){4}:\*\s+LISTEN\s*$' >/dev/null; then
   sleep 1
   if [[ ! ${QUIET_LOGS,,} =~ true ]]; then
     "${s6wrap[@]}" echo "[hfdl_stats] hfdl_server not running, exiting"
@@ -29,6 +31,13 @@ while true; do
   # if /run/hfdl_test_mode exists we're in test mode, so don't do any of the following
   if [[ -f /run/hfdl_test_mode ]]; then
     rm -rf /run/hfdl/hfdl.*.json
+    was_testing_mode=true
+    continue
+  fi
+
+  if [[ $was_testing_mode == true ]]; then
+    "${s6wrap[@]}" echo "Exiting test mode. Will start to count messages again."
+    was_testing_mode=false
     continue
   fi
 
@@ -37,9 +46,9 @@ while true; do
 
   # rotate files keeping last 2 hours
   for i in {24..1}; do
-    mv "/run/hfdl/hfdl.$((i-1)).json" "/run/hfdl/hfdl.$i.json" > /dev/null 2>&1 || true
+    mv "/run/hfdl/hfdl.$((i - 1)).json" "/run/hfdl/hfdl.$i.json" >/dev/null 2>&1 || true
   done
-  mv "/run/hfdl/hfdl.past5min.json" "/run/hfdl/hfdl.0.json" > /dev/null 2>&1 || true
+  mv "/run/hfdl/hfdl.past5min.json" "/run/hfdl/hfdl.0.json" >/dev/null 2>&1 || true
 
   # now check and see if the last 30 minutes of data has any messages. If not, pkill dumphfdl
   # if FREQUENCIES is set, we're not using dumphfdl scan, so skip this check
