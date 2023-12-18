@@ -9,6 +9,12 @@ fname=()
 # shellcheck disable=SC1091
 source /scripts/common
 
+SCRIPT_NAME="$(basename "$0")"
+SCRIPT_NAME="${SCRIPT_NAME%.*}"
+
+# shellcheck disable=SC2034
+s6wrap=(s6wrap --quiet --timestamps --prepend="$SCRIPT_NAME" --args)
+
 if [[ -f /opt/scanner/scanner_freqs.sh ]]; then
   # shellcheck disable=SC1091
   source /opt/scanner/scanner_freqs.sh
