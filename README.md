@@ -53,7 +53,8 @@ services:
       - /tmp
     volumes:
       - /dev:/dev:ro
-      - /opt/dumphfdl-data:/opt/dumphfdl
+      - /opt/adsb/data/dumphfdl-data:/opt/dumphfdl
+      - /opt/adsb/data/dumphfdl-scanner:/opt/scanner
 ```
 
 ## Supported SDRs
