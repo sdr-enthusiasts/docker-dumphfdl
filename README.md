@@ -109,16 +109,21 @@ docker exec -it dumphfdl /reset-dumphfdl.sh
 
 If you do not wish to use the frequency selector script, you can specify frequencies to monitor by setting the `FREQUENCIES` variable. This should be a list of frequencies separated by spaces.
 
+## Customize the frequency selector and retain current state between container starts
+
+Map a volume to `/opt/scanner` to retain the current state of the scanner between container starts. This will allow the scanner to pick up where it left off on container restarts without rescanning.
+
+If you want to customize the frequency bands, number of bands, etc, map a volume to `/opt/scanner` and include a file in there named `scanner_freqs.sh.` Please see [this](https://github.com/sdr-enthusiasts/docker-dumphfdl/blob/maint/rootfs/opt/hfdl/scanner_freqs.sh) for an example. Please be sure to follow the same formatting.
+
 ## Volumes
 
-| Volume               | Description                                                         |
-| -------------------- | ------------------------------------------------------------------- |
-| `/dev`               | This is required to pass through the SDR device.                    |
-| `/opt/dumphfdl-data` | This is where the container will store updated systable information |
+| Volume               | Description                                                                                                                  |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `/dev`               | This is required to pass through the SDR device.                                                                             |
+| `/opt/dumphfdl-data` | This is where the container will store updated systable information                                                          |
+| `/opt/scanner`       | This is where the container will store/load the scanner data, such as the current state and any modified scanner band ranges |
 
 ## Future optimizations
-
-The frequency ranges were selected with the Airspy HF+ Discovery in mind. It has a fairly narrow sample rate, so the frequency ranges are fairly narrow. If you have a wider bandwidth SDR, it would be ideal to have more frequencies monitored at once.
 
 It would also be ideal to be more circumspect in gain/sample rate based on the frequencies being monitored, which is how the original script from wiedehopf works.
 

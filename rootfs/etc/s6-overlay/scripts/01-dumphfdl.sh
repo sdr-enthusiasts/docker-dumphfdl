@@ -1,22 +1,30 @@
 #!/command/with-contenv bash
 # shellcheck shell=bash
 
+# shellcheck disable=SC1091
 source /scripts/common
 
+SCRIPT_NAME="$(basename "$0")"
+SCRIPT_NAME="${SCRIPT_NAME%.*}"
+
+# shellcheck disable=SC2034
+s6wrap=(s6wrap --quiet --timestamps --prepend="$SCRIPT_NAME" --args)
+
 if [[ -z "$SOAPYSAMPLERATE" ]]; then
+	# shellcheck disable=SC2154
 	"${s6wrap[@]}" echo "SOAPYSAMPLERATE is not set, exiting"
 	exit 1
 fi
 
-if [[ -z "$GAIN" ]]; then
-	"${s6wrap[@]}" echo "GAIN is not set, exiting"
-	exit 1
-fi
+# if [[ -z "$GAIN" ]]; then
+# 	"${s6wrap[@]}" echo "GAIN is not set, exiting"
+# 	exit 1
+# fi
 
-if [[ -z "$GAIN_TYPE" ]]; then
-	"${s6wrap[@]}" echo "GAIN_TYPE is not set, exiting"
-	exit 1
-fi
+# if [[ -z "$GAIN_TYPE" ]]; then
+# 	"${s6wrap[@]}" echo "GAIN_TYPE is not set, exiting"
+# 	exit 1
+# fi
 
 if [[ -z "$SOAPYSDRDRIVER" ]]; then
 	"${s6wrap[@]}" echo "SOAPYSDRDRIVER is not set, exiting"
