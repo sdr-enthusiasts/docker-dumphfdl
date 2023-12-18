@@ -10,15 +10,15 @@ if [[ -z "$SOAPYSAMPLERATE" ]]; then
 	exit 1
 fi
 
-if [[ -z "$GAIN" ]]; then
-	"${s6wrap[@]}" echo "GAIN is not set, exiting"
-	exit 1
-fi
+# if [[ -z "$GAIN" ]]; then
+# 	"${s6wrap[@]}" echo "GAIN is not set, exiting"
+# 	exit 1
+# fi
 
-if [[ -z "$GAIN_TYPE" ]]; then
-	"${s6wrap[@]}" echo "GAIN_TYPE is not set, exiting"
-	exit 1
-fi
+# if [[ -z "$GAIN_TYPE" ]]; then
+# 	"${s6wrap[@]}" echo "GAIN_TYPE is not set, exiting"
+# 	exit 1
+# fi
 
 if [[ -z "$SOAPYSDRDRIVER" ]]; then
 	"${s6wrap[@]}" echo "SOAPYSDRDRIVER is not set, exiting"
