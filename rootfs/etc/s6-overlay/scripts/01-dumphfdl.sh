@@ -1,9 +1,11 @@
 #!/command/with-contenv bash
 # shellcheck shell=bash
 
+# shellcheck disable=SC1091
 source /scripts/common
 
 if [[ -z "$SOAPYSAMPLERATE" ]]; then
+	# shellcheck disable=SC2154
 	"${s6wrap[@]}" echo "SOAPYSAMPLERATE is not set, exiting"
 	exit 1
 fi

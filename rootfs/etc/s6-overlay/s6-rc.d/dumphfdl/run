@@ -1,2 +1,2 @@
 #!/bin/sh
-exec /etc/s6-overlay/scripts/dumphfdl
+exec /etc/s6-overlay/scripts/dumphfdl.sh
