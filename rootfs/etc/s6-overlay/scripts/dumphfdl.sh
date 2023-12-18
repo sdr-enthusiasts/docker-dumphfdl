@@ -6,9 +6,9 @@
 # just to make shellcheck shut up
 freq=()
 fname=()
-#shellcheck disable=SC1091
+# shellcheck disable=SC1091
 source /scripts/common
-#shellcheck disable=SC1091
+# shellcheck disable=SC1091
 source /opt/scanner/scanner_freqs.sh
 
 touch /run/hfdl_test_mode
