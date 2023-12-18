@@ -8,8 +8,14 @@ freq=()
 fname=()
 # shellcheck disable=SC1091
 source /scripts/common
-# shellcheck disable=SC1091
-source /opt/scanner/scanner_freqs.sh
+
+if [[ -f /opt/scanner/scanner_freqs.sh ]]; then
+  # shellcheck disable=SC1091
+  source /opt/scanner/scanner_freqs.sh
+else
+  # shellcheck disable=SC1091
+  source /opt/hfdl/scanner_freqs.sh
+fi
 
 touch /run/hfdl_test_mode
 
@@ -180,7 +186,7 @@ else
 
   rm -rf /run/hfdl_test_mode
 
-  echo "freq=(\"${freq[*]}\")" >/opt/scanner/current_state
+  echo "freq=(\"${freq[$k]}\")" >/opt/scanner/current_state
   # shellcheck disable=SC2206
   longcmd=("${dumpcmd[@]}" "$GAIN_TYPE" "$GAIN" --sample-rate "$SOAPYSAMPLERATE" ${freq[$k]})
 
