@@ -32,23 +32,6 @@ trap 'echo "[ERROR] Error in line $LINENO when executing: $BASH_COMMAND"' ERR
 
 ###############################################################
 
-
-LOGFILE="/run/hfdl.log"
-ERRORLOG="/run/hfdl.error.log"
-
-# rotates the hfdl log daily
-currentTime=`date +%H:%M`
-currentDate=`date +%F`
-if [ $currentTime == "00:00" ] && [ -f "$LOGFILE" ];
-then
-			pkill dumphfdl;
-			sleep 5
-			mv "$LOGFILE" "/run/hfdl_${currentDate}.log"
-fi
-sleep 5
-
-# use tail -f /run/hfdl.log to follow the output when the decoder is running
-
 #name for the frequency group
 fname=()
 
@@ -93,8 +76,6 @@ dumpcmd=( /usr/local/bin/dumphfdl )
 dumpcmd+=( --soapysdr ${SOAPYSDRDRIVER} )
 dumpcmd+=(--station-id "$FEED_ID")
 
-# change the LOGFILE variable at the top to modify where the more permanent logfile is
-special_run=( --output "decoded:text:file:path=$LOGFILE")
 dumpcmd+=(--output "decoded:json:udp:address=127.0.0.1,port=5556")
 # dumpcmd+=(--output "decoded:json:tcp:address=feed.airframes.io,port=5556")
 
@@ -172,7 +153,7 @@ else
         positions+=(0)
         score+=(0)
         rm -f "$TMPLOG"
-        timeoutcmd=( timeout "$TIMEOUT" "${dumpcmd[@]}" "${special_run[@]}" $GAIN_TYPE $GAIN --sample-rate $SOAPYSAMPLERATE ${freq[$i]} --output "decoded:text:file:path=$TMPLOG" )
+        timeoutcmd=( timeout "$TIMEOUT" "${dumpcmd[@]}" $GAIN_TYPE $GAIN --sample-rate $SOAPYSAMPLERATE ${freq[$i]} --output "decoded:text:file:path=$TMPLOG" )
         "${s6wrap[@]}" echo "running: ${timeoutcmd[@]}"
         "${s6wrap[@]}" "${timeoutcmd[@]}" || true
         if [[ -f "$TMPLOG" ]]; then
