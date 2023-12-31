@@ -17,8 +17,6 @@ ENV DEVICE_INDEX="" \
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-COPY install_sdrplay.sh /tmp/install_sdrplay.sh
-
 # hadolint ignore=DL3008,SC2086,SC2039
 RUN set -x && \
     TEMP_PACKAGES=() && \
@@ -54,6 +52,7 @@ RUN set -x && \
     "${TEMP_PACKAGES[@]}"\
     && \
     # install sdrplay
+    curl --location --output /tmp/install_sdrplay.sh https://raw.githubusercontent.com/sdr-enthusiasts/install-libsdrplay/main/install_sdrplay.sh && \
     chmod +x /tmp/install_sdrplay.sh && \
     /tmp/install_sdrplay.sh && \
     # build libairspy
@@ -66,6 +65,7 @@ RUN set -x && \
     make install && \
     ldconfig && \
     popd && popd && \
+    # deploy airspyone host
     git clone https://github.com/airspy/airspyone_host.git /src/airspyone_host && \
     pushd /src/airspyone_host && \
     mkdir -p /src/airspyone_host/build && \
@@ -139,7 +139,7 @@ RUN set -x && \
     make && \
     make install && \
     # grab the basestation database
-    wget -q -O /tmp/BaseStation.zip https://github.com/rikgale/VRSData/raw/main/BaseStation.zip && \
+    curl --location --output /tmp/BaseStation.zip https://github.com/rikgale/VRSData/raw/main/BaseStation.zip && \
     mkdir -p /usr/local/share/basestation/ && \
     unzip /tmp/BaseStation.zip -d /usr/local/share/basestation/ && \
     # grab the /etc/systable.conf file from the dumphfdl source tree
