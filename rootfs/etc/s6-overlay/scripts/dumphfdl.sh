@@ -92,6 +92,10 @@ if [[ -n "$ZMQ_MODE" ]]; then
   fi
 fi
 
+if [[ -n "$STATSD_SERVER" ]]; then
+  dumpcmd+=("--statsd" "$STATSD_SERVER")
+fi
+
 # only run scan if FREQUENCIES is not set
 if [[ -n "${FREQUENCIES}" ]]; then
   rm -rf /run/hfdl_test_mode
