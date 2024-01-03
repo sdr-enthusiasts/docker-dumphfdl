@@ -13,7 +13,8 @@ ENV DEVICE_INDEX="" \
     MIN_MESSAGE_THRESHOLD="5" \
     ENABLE_SYSTABLE="TRUE" \
     ENABLE_BASESTATION="TRUE" \
-    BASESTATION_VERBOSE="TRUE"
+    BASESTATION_VERBOSE="TRUE" \
+    STATSD_SERVER=""
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -51,6 +52,13 @@ RUN set -x && \
     "${KEPT_PACKAGES[@]}" \
     "${TEMP_PACKAGES[@]}"\
     && \
+    # Install statsd-c-client library
+    git clone https://github.com/romanbsd/statsd-c-client.git /src/statsd-client && \
+    pushd /src/statsd-client && \
+    make -j "$(nproc)" && \
+    make install && \
+    ldconfig && \
+    popd && \
     # install sdrplay
     curl --location --output /tmp/install_sdrplay.sh https://raw.githubusercontent.com/sdr-enthusiasts/install-libsdrplay/main/install_sdrplay.sh && \
     chmod +x /tmp/install_sdrplay.sh && \
