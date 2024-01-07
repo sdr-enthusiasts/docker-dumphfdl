@@ -86,6 +86,9 @@ if chk_enabled "${ENABLE_BASESTATION}"; then
   fi
 fi
 
+# end point for acars bridge
+dumpcmd+=(--output "decoded:json:zmq:mode=server,endpoint=tcp://0.0.0.0:5556")
+
 if [[ -n "$ZMQ_MODE" ]]; then
   if [[ -n "$ZMQ_ENDPOINT" ]]; then
     dumpcmd+=("--output" "decoded:json:zmq:mode=${ZMQ_MODE,,},endpoint=${ZMQ_ENDPOINT}")
