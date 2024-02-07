@@ -186,6 +186,12 @@ else
     fi
     ((i += 1))
   done
+
+  if ((${score[$k]} == 0)); then
+    "${s6wrap[@]}" echo "No messages, repeating scan."
+    exit
+  fi
+
   "${s6wrap[@]}" echo --------
   "${s6wrap[@]}" echo "${fname[$k]} wins"
   "${s6wrap[@]}" printf "%-20s%-15s%-25s%-26s%-18s\n" "${fname[$k]}" "score: ${score[$k]}" "stationMessages: ${stationMessages[$k]}" "aircraftMessages: ${aircraftMessages[$k]}" "positions: ${positions[$k]}"
