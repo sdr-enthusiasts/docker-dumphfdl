@@ -8,13 +8,9 @@
 
 Docker container for running [dumphfdl](https://github.com/szpajder/dumphfdl) and forwarding the received JSON messages to another system or docker container. Best used alongside [ACARS Hub](https://github.com/fredclausen/acarshub).
 
-Builds and runs on `amd64`, `arm64`, and `arm/v7` architectures.
+Builds and runs on `amd64`, `arm64` architectures.
 
-**_WORK IN PROGRESS. `acars_router` and `ACARS Hub` support is a WIP_**
-
-## Note for Users running 32-bit Debian Buster-based OSes on ARM
-
-Please see: [Buster-Docker-Fixes](https://github.com/fredclausen/Buster-Docker-Fixes)!
+Please note: **DUE TO LIBSDRPLAY, ARMV7 IS NOT SUPPORTED.**
 
 ## Required hardware
 
