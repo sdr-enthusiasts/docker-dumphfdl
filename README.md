@@ -37,8 +37,7 @@ services:
       - TZ=${FEEDER_TZ}
       - SOAPYSDRDRIVER=driver=airspyhf,serial=0x3b52aa80389e25ad
       - GAIN_TYPE=--gain
-      - SOAPYSAMPLERATE=912000
-      - GAIN=40
+      - SOAPYSAMPLERATE=768000
       - FEED_ID=CS-KABQ-HFDL
       - ZMQ_MODE=server
       - ZMQ_ENDPOINT=tcp://0.0.0.0:45555
