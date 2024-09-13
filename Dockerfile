@@ -143,17 +143,6 @@ RUN set -x && \
     make install && \
     popd && popd && \
     ldconfig && \
-    # install sdrplay support for soapy
-    git clone https://github.com/pothosware/SoapySDRPlay.git /src/SoapySDRPlay && \
-    pushd /src/SoapySDRPlay && \
-    mkdir build && \
-    pushd build && \
-    cmake .. && \
-    make && \
-    make install && \
-    popd && \
-    popd && \
-    ldconfig && \
     # Install dumphfdl
     git clone https://github.com/szpajder/dumphfdl.git /src/dumphfdl && \
     pushd /src/dumphfdl && \
