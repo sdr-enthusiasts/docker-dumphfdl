@@ -67,10 +67,6 @@ RUN set -x && \
     make && \
     make install && \
     popd && popd && \
-    # install sdrplay
-    curl --location --output /tmp/install_sdrplay.sh https://raw.githubusercontent.com/sdr-enthusiasts/install-libsdrplay/main/install_sdrplay.sh && \
-    chmod +x /tmp/install_sdrplay.sh && \
-    /tmp/install_sdrplay.sh && \
     # build libairspy
     git clone https://github.com/airspy/airspyhf.git /src/airspyhf && \
     pushd /src/airspyhf && \
@@ -102,6 +98,10 @@ RUN set -x && \
     make install && \
     popd && popd && \
     ldconfig && \
+    # install sdrplay
+    curl --location --output /tmp/install_sdrplay.sh https://raw.githubusercontent.com/sdr-enthusiasts/install-libsdrplay/main/install_sdrplay.sh && \
+    chmod +x /tmp/install_sdrplay.sh && \
+    /tmp/install_sdrplay.sh && \
     git clone https://github.com/ericek111/SoapyMiri.git /src/SoapyMiri && \
     pushd /src/SoapyMiri && \
     mkdir build && \
