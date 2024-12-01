@@ -28,7 +28,6 @@ version: "2.0"
 services:
   dumphfdl:
     image: ghcr.io/sdr-enthusiasts/docker-dumphfdl:latest
-    tty: true
     container_name: dumphfdl
     restart: always
     device_cgroup_rules:
