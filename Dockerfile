@@ -1,4 +1,4 @@
-FROM ghcr.io/sdr-enthusiasts/docker-baseimage:acars-decoder
+FROM ghcr.io/sdr-enthusiasts/docker-baseimage:acars-decoder-soapy
 
 ENV DEVICE_INDEX="" \
     QUIET_LOGS="TRUE" \
@@ -59,90 +59,6 @@ RUN set -x && \
     make install && \
     ldconfig && \
     popd && \
-    git clone https://github.com/ericek111/libmirisdr-5.git /src/libmirisdr-5 && \
-    pushd /src/libmirisdr-5 && \
-    mkdir build && \
-    pushd build && \
-    cmake .. && \
-    make && \
-    make install && \
-    popd && popd && \
-    # build libairspy
-    git clone https://github.com/airspy/airspyhf.git /src/airspyhf && \
-    pushd /src/airspyhf && \
-    mkdir -p /src/airspyhf/build && \
-    pushd /src/airspyhf/build && \
-    cmake ../ -DCMAKE_BUILD_TYPE=Release -DINSTALL_UDEV_RULES=ON && \
-    make && \
-    make install && \
-    ldconfig && \
-    popd && popd && \
-    # deploy airspyone host
-    git clone https://github.com/airspy/airspyone_host.git /src/airspyone_host && \
-    pushd /src/airspyone_host && \
-    mkdir -p /src/airspyone_host/build && \
-    pushd /src/airspyone_host/build && \
-    cmake ../ -DINSTALL_UDEV_RULES=ON && \
-    make && \
-    make install && \
-    ldconfig && \
-    popd && popd && \
-    # Deploy SoapySDR
-    git clone https://github.com/pothosware/SoapySDR.git /src/SoapySDR && \
-    pushd /src/SoapySDR && \
-    mkdir -p /src/SoapySDR/build && \
-    pushd /src/SoapySDR/build && \
-    cmake ../ -DCMAKE_BUILD_TYPE=Release && \
-    make all && \
-    make test && \
-    make install && \
-    popd && popd && \
-    ldconfig && \
-    # install sdrplay
-    curl --location --output /tmp/install_sdrplay.sh https://raw.githubusercontent.com/sdr-enthusiasts/install-libsdrplay/main/install_sdrplay.sh && \
-    chmod +x /tmp/install_sdrplay.sh && \
-    /tmp/install_sdrplay.sh && \
-    git clone https://github.com/ericek111/SoapyMiri.git /src/SoapyMiri && \
-    pushd /src/SoapyMiri && \
-    mkdir build && \
-    pushd build && \
-    cmake .. && \
-    make -j4 && \
-    make install && \
-    popd && popd && \
-    # Deploy AirspyHF+
-    git clone https://github.com/pothosware/SoapyAirspyHF.git /src/SoapyAirspyHF && \
-    pushd /src/SoapyAirspyHF && \
-    mkdir -p /src/SoapyAirspyHF/build && \
-    pushd /src/SoapyAirspyHF/build && \
-    cmake ../ -DCMAKE_BUILD_TYPE=Release && \
-    make all && \
-    make install && \
-    popd && popd && \
-    ldconfig && \
-    # Deploy Airspy
-    git clone https://github.com/pothosware/SoapyAirspy.git /src/SoapyAirspy && \
-    pushd /src/SoapyAirspy && \
-    mkdir build && \
-    pushd build && \
-    cmake .. && \
-    make    && \
-    make install   && \
-    popd && \
-    popd && \
-    ldconfig && \
-    # Deploy SoapyRTLSDR
-    git clone https://github.com/pothosware/SoapyRTLSDR.git /src/SoapyRTLSDR && \
-    pushd /src/SoapyRTLSDR && \
-    BRANCH_SOAPYRTLSDR=$(git tag --sort="creatordate" | tail -1) && \
-    git checkout "$BRANCH_SOAPYRTLSDR" && \
-    mkdir -p /src/SoapyRTLSDR/build && \
-    pushd /src/SoapyRTLSDR/build && \
-    cmake ../ -DCMAKE_BUILD_TYPE=Debug && \
-    make all && \
-    make install && \
-    popd && popd && \
-    ldconfig && \
     # Install dumphfdl
     git clone https://github.com/szpajder/dumphfdl.git /src/dumphfdl && \
     pushd /src/dumphfdl && \
