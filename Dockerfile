@@ -18,7 +18,7 @@ ENV DEVICE_INDEX="" \
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# hadolint ignore=DL3008,SC2086,SC2039
+# hadolint ignore=DL3008,SC2086,SC2039,SC1091
 RUN set -x && \
     TEMP_PACKAGES=() && \
     KEPT_PACKAGES=() && \
@@ -32,11 +32,23 @@ RUN set -x && \
     TEMP_PACKAGES+=(wget) && \
     # packages for dumpvdl2
     TEMP_PACKAGES+=(libglib2.0-dev) && \
+    # if we are on trixie, we want libglib2.0-0t64, otherwise we want libglib2.0-0
+    . /etc/os-release && \
+    # distro="$ID" && \
+    # version="$VERSION_ID" && \
+    codename="$VERSION_CODENAME" && \
+    if [[ "$codename" == "trixie" ]]; then \
+    KEPT_PACKAGES+=(libglib2.0-0t64) && \
+    KEPT_PACKAGES+=(libconfig++11) && \
+    branch="devel"; \
+    else \
     KEPT_PACKAGES+=(libglib2.0-0) && \
+    KEPT_PACKAGES+=(libconfig++9v5) && \
+    branch="master"; \
+    fi && \
     TEMP_PACKAGES+=(libzmq3-dev) && \
     KEPT_PACKAGES+=(libzmq5) && \
     TEMP_PACKAGES+=(libconfig++-dev) && \
-    KEPT_PACKAGES+=(libconfig++9v5) && \
     KEPT_PACKAGES+=(libfftw3-bin) && \
     TEMP_PACKAGES+=(libfftw3-dev) && \
     TEMP_PACKAGES+=(libliquid-dev) && \
@@ -60,7 +72,7 @@ RUN set -x && \
     ldconfig && \
     popd && \
     # Install dumphfdl
-    git clone https://github.com/szpajder/dumphfdl.git /src/dumphfdl && \
+    git clone -b "$branch" https://github.com/szpajder/dumphfdl.git /src/dumphfdl && \
     pushd /src/dumphfdl && \
     mkdir -p /src/dumphfdl/build && \
     pushd /src/dumphfdl/build && \
