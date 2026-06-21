@@ -66,7 +66,7 @@ Keep in mind not every SDR is usable with HF decoding. If you have an SDR that i
 
 Please be sure you are in compliance with the license restrictions. The container includes a copy of the license.
 
-You will need SDRPlay installed on the host machine. See [here](https://www.sdrplay.com/downloads/) for more information.
+You will need SDRPlay installed on the host machine. See [sdrplay downloads](https://www.sdrplay.com/downloads/) for more information.
 
 ## Configuration options
 
