@@ -105,8 +105,14 @@ if [[ -n "${FREQUENCIES}" ]]; then
   "${s6wrap[@]}" echo "Frequencies were supplied, skipping test."
   "${s6wrap[@]}" echo "------"
   "${s6wrap[@]}" echo "Running: ${longcmd[*]}"
-  "${s6wrap[@]}" "${longcmd[@]}"
-  "${s6wrap[@]}" echo "------"
+  # exec so dumphfdl becomes the process s6-supervise tracks. Without it this
+  # script stays alive as an intermediate bash, s6 signals bash instead of
+  # dumphfdl, and s6-rc reports "dumphfdl successfully stopped" while the
+  # decoder is still running and still holding its SDR. s6-rc then tears down
+  # the sdrplay API service underneath the live decoder, which segfaults the
+  # vendor daemon and makes ReleaseDevice() throw. See dumpvdl2 for the same
+  # pattern done correctly.
+  exec "${s6wrap[@]}" "${longcmd[@]}"
 # we must be in scan mode, lets see if the scanner was previously run and we have a valid state
 elif [[ -f /opt/scanner/current_state ]]; then
   #shellcheck disable=SC1091
@@ -120,8 +126,8 @@ elif [[ -f /opt/scanner/current_state ]]; then
 
   "${s6wrap[@]}" echo "------"
   "${s6wrap[@]}" echo "Running: ${longcmd[*]}"
-  "${s6wrap[@]}" "${longcmd[@]}"
-  "${s6wrap[@]}" echo "------"
+  # exec: see the comment on the first invocation above.
+  exec "${s6wrap[@]}" "${longcmd[@]}"
 else
 
   # adjust scoring weights
@@ -212,6 +218,6 @@ else
 
   "${s6wrap[@]}" echo "------"
   "${s6wrap[@]}" echo "Running: ${longcmd[*]}"
-  "${s6wrap[@]}" "${longcmd[@]}"
-  "${s6wrap[@]}" echo "------"
+  # exec: see the comment on the first invocation above.
+  exec "${s6wrap[@]}" "${longcmd[@]}"
 fi
