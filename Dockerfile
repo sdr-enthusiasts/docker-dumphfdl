@@ -37,14 +37,12 @@ RUN set -x && \
     # distro="$ID" && \
     # version="$VERSION_ID" && \
     codename="$VERSION_CODENAME" && \
-    if [[ "$codename" == "trixie" ]]; then \
-    KEPT_PACKAGES+=(libglib2.0-0t64) && \
-    KEPT_PACKAGES+=(libconfig++11) && \
-    branch="devel"; \
-    else \
+    if [[ "$codename" == "bookworm" ]]; then \
     KEPT_PACKAGES+=(libglib2.0-0) && \
-    KEPT_PACKAGES+=(libconfig++9v5) && \
     branch="master"; \
+    else \
+    KEPT_PACKAGES+=(libglib2.0-0t64) && \
+    branch="devel"; \
     fi && \
     TEMP_PACKAGES+=(libzmq3-dev) && \
     KEPT_PACKAGES+=(libzmq5) && \
@@ -60,6 +58,14 @@ RUN set -x && \
     TEMP_PACKAGES+=(unzip) && \
     # install packages
     apt-get update && \
+    # Runtime library packages are renamed with Debian releases (soname bumps), so
+    # resolve the one each -dev package depends on instead of naming a version.
+    runtime_pkg() { \
+    p="$(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances "$1" | sed -nE "s/^ *Depends: ($2)\$/\1/p" | head -n1)"; \
+    if [ -z "$p" ]; then echo "no runtime package matching $2 for $1" >&2; return 1; fi; \
+    echo "$p"; \
+    } && \
+    KEPT_PACKAGES+=("$(runtime_pkg libconfig++-dev 'libconfig\+\+[0-9]+')") && \
     apt-get install -y --no-install-recommends \
     "${KEPT_PACKAGES[@]}" \
     "${TEMP_PACKAGES[@]}"\
