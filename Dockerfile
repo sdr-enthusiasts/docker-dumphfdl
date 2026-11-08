@@ -86,7 +86,7 @@ RUN set -x && \
     make && \
     make install && \
     # grab the basestation database
-    curl --location --output /tmp/BaseStation.zip https://github.com/rikgale/VRSData/raw/main/BaseStation.zip && \
+    curl --location --fail --retry 3 --output /tmp/BaseStation.zip https://github.com/rikgale/VRSData/raw/main/BaseStation.zip && \
     mkdir -p /usr/local/share/basestation/ && \
     unzip /tmp/BaseStation.zip -d /usr/local/share/basestation/ && \
     # grab the /etc/systable.conf file from the dumphfdl source tree
